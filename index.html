@@ -292,10 +292,202 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
 .reset-intro i{color:var(--gold);margin-left:6px}
 .reset-back{margin-top:12px}
 #reset-feedback{line-height:1.9;font-size:13px;margin-bottom:0}
+
+
+/* ===== الخلفية المتحركة لصفحة تسجيل الدخول فقط ===== */
+#auth-wrap.auth-wrap {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  min-height:100vh;
+  min-height:100dvh;
+  background:
+    radial-gradient(ellipse at 53% 100%,rgba(59,32,106,.22) 0,transparent 59%),
+    linear-gradient(137deg,#080911 4%,#0a0c1d 51%,#070814 100%);
+}
+#auth-wrap .login-ambient {
+  position:absolute;
+  inset:0;
+  z-index:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+#auth-wrap .login-ambient:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:linear-gradient(rgba(161,129,236,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(161,129,236,.035) 1px,transparent 1px);
+  background-size:70px 70px;
+  mask-image:radial-gradient(ellipse at 50% 50%,black 10%,transparent 83%);
+}
+#auth-wrap .login-ambient:after {
+  content:"";
+  position:absolute;
+  width:75vw;
+  height:2px;
+  left:13%;
+  top:20%;
+  background:linear-gradient(90deg,transparent,rgba(184,134,255,.15),transparent);
+  transform:rotate(-13deg);
+  animation:loginLightSweep 14s ease-in-out infinite alternate;
+}
+#auth-wrap .login-aurora {
+  position:absolute;
+  width:min(58vw,680px);
+  aspect-ratio:1;
+  border-radius:50%;
+  filter:blur(67px);
+  opacity:.58;
+  will-change:transform;
+  animation:loginAuroraFloat 23s ease-in-out infinite alternate;
+}
+#auth-wrap .login-aurora.a1{
+  top:-42%;left:-16%;
+  background:radial-gradient(circle,rgba(105,67,227,.42),rgba(94,45,160,.13) 44%,transparent 71%);
+}
+#auth-wrap .login-aurora.a2{
+  bottom:-46%;right:-13%;
+  background:radial-gradient(circle,rgba(120,65,215,.36),rgba(218,140,61,.1) 43%,transparent 72%);
+  animation-duration:29s;animation-delay:-8s;animation-direction:alternate-reverse;
+}
+#auth-wrap .login-aurora.a3{
+  top:22%;right:4%;width:min(33vw,460px);
+  background:radial-gradient(circle,rgba(66,110,222,.18),transparent 68%);
+  animation-duration:34s;animation-delay:-15s;
+}
+#auth-wrap .login-ring{
+  position:absolute;
+  width:clamp(280px,45vw,680px);
+  aspect-ratio:1;
+  border:1px solid rgba(155,116,236,.105);
+  border-radius:50%;
+  box-shadow:0 0 60px rgba(126,74,222,.05),inset 0 0 60px rgba(126,74,222,.045);
+  animation:loginRingDrift 28s linear infinite;
+}
+#auth-wrap .login-ring.r1{top:1%;right:-20%;transform-origin:49% 50%}
+#auth-wrap .login-ring.r2{bottom:-47%;left:-12%;width:clamp(380px,56vw,820px);animation-duration:43s;animation-direction:reverse}
+#auth-wrap .login-ring::after{
+  content:"";
+  display:block;
+  position:absolute;
+  width:7px;height:7px;
+  left:15%;top:15%;
+  background:#d5b4ff;
+  border-radius:50%;
+  box-shadow:0 0 12px 3px rgba(167,121,242,.5);
+}
+#auth-wrap .login-spark{
+  position:absolute;
+  left:var(--x);top:var(--y);
+  width:var(--size);height:var(--size);
+  border-radius:50%;
+  background:var(--tone);
+  box-shadow:0 0 10px 2px currentColor;
+  color:var(--tone);
+  opacity:.18;
+  animation:loginSparkFloat var(--dur) ease-in-out var(--delay) infinite alternate;
+}
+#auth-wrap .login-spark.cross{border-radius:0;box-shadow:none;transform:rotate(45deg)}
+#auth-wrap .login-spark.cross:before,#auth-wrap .login-spark.cross:after{
+  content:"";position:absolute;background:currentColor;border-radius:3px;
+}
+#auth-wrap .login-spark.cross:before{width:1px;height:13px;top:-6px;left:50%}
+#auth-wrap .login-spark.cross:after{height:1px;width:13px;left:-6px;top:50%}
+#auth-wrap .card.auth {
+  position:relative;
+  z-index:1;
+  background:linear-gradient(145deg,rgba(21,20,37,.94),rgba(13,14,27,.92));
+  border:1px solid rgba(154,128,225,.34);
+  border-radius:20px;
+  box-shadow:0 26px 80px rgba(0,0,0,.48),0 0 70px rgba(109,62,192,.09),inset 0 1px 0 rgba(255,255,255,.045);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  animation:loginCardEnter .8s cubic-bezier(.21,.71,.22,1) both;
+}
+#auth-wrap .auth-header i{
+  filter:drop-shadow(0 0 17px rgba(243,189,89,.28));
+  animation:loginLogoGlow 5s ease-in-out infinite;
+}
+#auth-wrap .auth-header h1{text-shadow:0 0 23px rgba(175,125,250,.18)}
+@keyframes loginAuroraFloat{
+  0%{transform:translate3d(-35px,28px,0) scale(.95)}
+  50%{transform:translate3d(35px,-38px,0) scale(1.08)}
+  100%{transform:translate3d(7px,58px,0) scale(.98)}
+}
+@keyframes loginRingDrift{to{rotate:360deg}}
+@keyframes loginSparkFloat{
+  0%{opacity:.09;translate:0 13px;scale:.75}
+  55%{opacity:.6}
+  100%{opacity:.18;translate:9px -20px;scale:1.1}
+}
+@keyframes loginLightSweep{
+  from{opacity:.18;translate:-12vw 1vh}
+  to{opacity:.75;translate:18vw -4vh}
+}
+@keyframes loginCardEnter{
+  from{opacity:0;translate:0 19px;scale:.985}
+  to{opacity:1;translate:0 0;scale:1}
+}
+@keyframes loginLogoGlow{
+  0%,100%{filter:drop-shadow(0 0 10px rgba(243,189,89,.14))}
+  50%{filter:drop-shadow(0 0 22px rgba(243,189,89,.43))}
+}
+@media(max-width:650px){
+  #auth-wrap.auth-wrap{padding:17px}
+  #auth-wrap .login-aurora{width:90vw;filter:blur(55px)}
+  #auth-wrap .login-aurora.a1{left:-56%;top:-8%}
+  #auth-wrap .login-aurora.a2{right:-54%;bottom:-18%}
+  #auth-wrap .login-ring.r1{top:4%;right:-68%}
+  #auth-wrap .login-ring.r2{bottom:-22%;left:-64%}
+  #auth-wrap .card.auth{border-radius:18px}
+}
+@media(prefers-reduced-motion:reduce){
+  #auth-wrap .login-ambient *,#auth-wrap .login-ambient:after,
+  #auth-wrap .card.auth,#auth-wrap .auth-header i{animation:none!important;transition:none!important}
+}
+
 </style>
 </head>
 <body>
 <div id="auth-wrap" class="auth-wrap">
+ <div class="login-ambient" aria-hidden="true">
+  <div class="login-aurora a1"></div><div class="login-aurora a2"></div><div class="login-aurora a3"></div>
+  <div class="login-ring r1"></div><div class="login-ring r2"></div>
+<span class="login-spark cross" style="--x:47%;--y:58%;--size:2px;--dur:15s;--delay:-2.8s;--tone:#f0ba6b"></span>
+  <span class="login-spark" style="--x:95%;--y:53%;--size:4px;--dur:9s;--delay:-12.3s;--tone:#6e8bd9"></span>
+  <span class="login-spark" style="--x:33%;--y:46%;--size:4px;--dur:17s;--delay:-6.6s;--tone:#f0ba6b"></span>
+  <span class="login-spark" style="--x:84%;--y:56%;--size:2px;--dur:7s;--delay:-13.9s;--tone:#d6b5ff"></span>
+  <span class="login-spark" style="--x:76%;--y:18%;--size:2px;--dur:11s;--delay:-1.7s;--tone:#f0ba6b"></span>
+  <span class="login-spark" style="--x:43%;--y:33%;--size:2px;--dur:13s;--delay:-12.5s;--tone:#d6b5ff"></span>
+  <span class="login-spark" style="--x:81%;--y:17%;--size:3px;--dur:15s;--delay:-10.2s;--tone:#f0ba6b"></span>
+  <span class="login-spark" style="--x:16%;--y:25%;--size:4px;--dur:17s;--delay:-2.9s;--tone:#a984ef"></span>
+  <span class="login-spark cross" style="--x:72%;--y:78%;--size:2px;--dur:17s;--delay:-11.7s;--tone:#a984ef"></span>
+  <span class="login-spark" style="--x:64%;--y:31%;--size:3px;--dur:13s;--delay:-13.2s;--tone:#f0ba6b"></span>
+  <span class="login-spark" style="--x:89%;--y:5%;--size:3px;--dur:8s;--delay:-13.4s;--tone:#6e8bd9"></span>
+  <span class="login-spark" style="--x:33%;--y:14%;--size:4px;--dur:10s;--delay:-10.1s;--tone:#a984ef"></span>
+  <span class="login-spark" style="--x:10%;--y:11%;--size:2px;--dur:15s;--delay:-12.5s;--tone:#6e8bd9"></span>
+  <span class="login-spark" style="--x:89%;--y:25%;--size:4px;--dur:8s;--delay:-9.1s;--tone:#a984ef"></span>
+  <span class="login-spark" style="--x:62%;--y:85%;--size:2px;--dur:16s;--delay:-12.2s;--tone:#6e8bd9"></span>
+  <span class="login-spark" style="--x:83%;--y:27%;--size:2px;--dur:14s;--delay:-3.6s;--tone:#a984ef"></span>
+  <span class="login-spark cross" style="--x:89%;--y:8%;--size:3px;--dur:8s;--delay:-15.4s;--tone:#d6b5ff"></span>
+  <span class="login-spark" style="--x:58%;--y:22%;--size:3px;--dur:11s;--delay:-1.9s;--tone:#6e8bd9"></span>
+  <span class="login-spark" style="--x:18%;--y:90%;--size:3px;--dur:10s;--delay:-0.4s;--tone:#a984ef"></span>
+  <span class="login-spark" style="--x:75%;--y:60%;--size:2px;--dur:9s;--delay:-14.9s;--tone:#a984ef"></span>
+  <span class="login-spark" style="--x:41%;--y:8%;--size:4px;--dur:7s;--delay:-1.7s;--tone:#f0ba6b"></span>
+  <span class="login-spark" style="--x:74%;--y:93%;--size:4px;--dur:7s;--delay:-1.0s;--tone:#d6b5ff"></span>
+  <span class="login-spark" style="--x:44%;--y:72%;--size:3px;--dur:8s;--delay:-10.1s;--tone:#f0ba6b"></span>
+  <span class="login-spark" style="--x:28%;--y:14%;--size:3px;--dur:13s;--delay:-10.6s;--tone:#6e8bd9"></span>
+  <span class="login-spark cross" style="--x:17%;--y:39%;--size:4px;--dur:12s;--delay:-15.0s;--tone:#a984ef"></span>
+  <span class="login-spark" style="--x:88%;--y:24%;--size:3px;--dur:7s;--delay:-7.5s;--tone:#6e8bd9"></span>
+  <span class="login-spark" style="--x:10%;--y:55%;--size:2px;--dur:14s;--delay:-3.7s;--tone:#f0ba6b"></span>
+  <span class="login-spark" style="--x:5%;--y:79%;--size:2px;--dur:15s;--delay:-10.9s;--tone:#d6b5ff"></span>
+  <span class="login-spark" style="--x:14%;--y:90%;--size:3px;--dur:13s;--delay:-2.1s;--tone:#f0ba6b"></span>
+  <span class="login-spark" style="--x:74%;--y:7%;--size:2px;--dur:10s;--delay:-6.9s;--tone:#a984ef"></span>
+  <span class="login-spark" style="--x:11%;--y:17%;--size:3px;--dur:7s;--delay:-3.0s;--tone:#6e8bd9"></span>
+  <span class="login-spark" style="--x:23%;--y:13%;--size:2px;--dur:9s;--delay:-10.0s;--tone:#6e8bd9"></span>
+  <span class="login-spark cross" style="--x:8%;--y:88%;--size:3px;--dur:15s;--delay:-10.0s;--tone:#a984ef"></span>
+  <span class="login-spark" style="--x:60%;--y:43%;--size:3px;--dur:9s;--delay:-12.4s;--tone:#6e8bd9"></span>
+ </div>
  <div class="card auth">
   <div class="auth-header"><i class="fa-solid fa-book-open-reader"></i><h1>الثقافة والقيم</h1><p class="muted">منصة الثقافة والارتقاء بالمستوى</p></div>
   <div class="auth-tabs"><button class="btn gold" id="login-tab" onclick="switchAuth('login')">تسجيل الدخول</button><button class="btn outline" id="register-tab" onclick="switchAuth('register')">إنشاء حساب</button></div>
