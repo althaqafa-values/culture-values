@@ -574,6 +574,7 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
   <button class="nav" data-page="daily-activities"><i class="fa-solid fa-calendar-days"></i><span>جدول الأنشطة</span></button>
   <button class="nav" data-page="contests"><i class="fa-solid fa-trophy"></i><span>المسابقات</span></button>
   <button class="nav" data-page="questions"><i class="fa-solid fa-circle-question"></i><span>الأسئلة والتقييم</span></button>
+  <button class="nav" data-page="pdf-files"><i class="fa-solid fa-file-pdf"></i><span>ملفات الثقافي</span></button>
   <button class="nav" data-page="announcements"><i class="fa-solid fa-bullhorn"></i><span>الإعلانات</span></button>
   <button class="nav" data-page="notifications"><i class="fa-solid fa-bell"></i><span>إشعاراتي <span id="unread-num"></span></span></button>
   <button class="nav editor-nav" data-page="attendance-report"><i class="fa-solid fa-clipboard-user"></i><span>سجل الحضور والغياب</span></button>
@@ -717,6 +718,15 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
    <div id="question-submissions-list" style="margin-top:12px"></div>
   </div>
  </section>
+<section id="page-pdf-files" class="page hidden">
+<h2 class="page-head"><i class="fa-solid fa-file-pdf"></i>ملفات الثقافي</h2>
+<div class="card"><h3>رفع ملف PDF</h3><form id="pdf-form">
+<div class="fields2"><div class="field"><label for="pdf-title">عنوان الملف</label><input id="pdf-title" class="input" required maxlength="120"></div>
+<div class="field"><label for="pdf-input">اختر ملف PDF (حتى 25 ميجابايت)</label><input id="pdf-input" class="input" type="file" accept=".pdf,application/pdf" required></div></div>
+<div id="pdf-visibility-field" class="field"><label for="pdf-visibility">من يمكنه مشاهدة الملف؟</label><select id="pdf-visibility"><option value="private">أنا فقط</option><option value="public">جميع أعضاء الموقع</option></select></div>
+<p id="pdf-policy" class="notice"></p><button id="pdf-submit" class="btn" type="submit">رفع الملف</button>
+<p id="pdf-status" role="status" aria-live="polite" style="margin-top:12px"></p></form></div>
+<div class="card" style="margin-top:16px"><h3>الملفات المتاحة لك</h3><div id="pdf-list"></div></div></section>
  <section id="page-announcements" class="page hidden"><h2 class="page-head"><i class="fa-solid fa-bullhorn"></i>لوحة الإعلانات</h2><div class="card editor-only"><h3>نشر إعلان جديد</h3><div class="field"><label>عنوان الإعلان</label><input class="input" id="announce-title" maxlength="120"></div><div class="field"><label>التفاصيل</label><textarea id="announce-body" maxlength="2000"></textarea></div><div class="field"><label>تاريخ ووقت انتهاء الإعلان</label><input id="announce-expires" type="datetime-local" class="input" required><small class="muted">سيختفي الإعلان تلقائيًا من شريط الإعلانات وقائمة الطلاب بعد انتهاء الوقت. الإعلانات القديمة بلا تاريخ انتهاء ستظل معروضة حتى تُحذف.</small></div><button class="btn" onclick="postAnnouncement()">نشر الإعلان</button></div><div id="announcements-list" style="margin-top:14px"></div></section>
  <section id="page-notifications" class="page hidden"><h2 class="page-head"><i class="fa-solid fa-bell"></i>إشعاراتي</h2><div class="card"><p class="muted">تظهر هنا إضافات وخصومات النقاط الخاصة بحسابك مباشرة، مع السبب والوقت.</p><div id="notification-list"></div></div></section>
  <section id="page-attendance-report" class="page hidden">
@@ -756,8 +766,10 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {getFirestore,collection,doc,getDoc,getDocs,setDoc,updateDoc,deleteDoc,onSnapshot,query,where,orderBy,limit,serverTimestamp,runTransaction,writeBatch,Timestamp,getDocsFromServer} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+import {getStorage,ref as storageRef,uploadBytesResumable,getBlob} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js';
 const config={apiKey:'AIzaSyAc9DLDQcH0vPnH3D2wAxgf5M0OLGIbQ5o',authDomain:'omran-b8b08.firebaseapp.com',projectId:'omran-b8b08',storageBucket:'omran-b8b08.firebasestorage.app',messagingSenderId:'268326579896',appId:'1:268326579896:web:bfa564b949d392ea05ce4d',measurementId:'G-VD2XR1VJ0N'};
 const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app);const $=id=>document.getElementById(id);
+const pdfStorage=getStorage(app);
 const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=t=>t?.toDate?t.toDate().toLocaleString('ar-SA',{dateStyle:'short',timeStyle:'short'}):'—';
 const dateVal=t=>t?.toDate?t.toDate():null;
@@ -1032,7 +1044,7 @@ async function handlePasswordReset(event){
 
 async function handleLogin(e){e.preventDefault();let b=e.target.querySelector('button');b.disabled=true;try{await signInWithEmailAndPassword(auth,$('login-email').value.trim().toLowerCase(),$('login-password').value);}catch(e){notify(errorText(e),true);}finally{b.disabled=false;}}
 async function handleRegister(e){e.preventDefault();if(creating)return;creating=true;let b=e.target.querySelector('button');b.disabled=true;let created=false;try{let fullname=$('reg-name').value.trim(),username=$('reg-user').value.trim();if(fullname.length<2||username.length<2)throw Error('اكتب اسمًا صحيحًا');let account=await createUserWithEmailAndPassword(auth,$('reg-email').value.trim().toLowerCase(),$('reg-password').value);created=true;await setDoc(doc(db,'users',account.user.uid),{fullname,username,points:0,role:'member',active:true,lastLogId:'',createdAt:serverTimestamp()});creating=false;await activate(account.user);notify('تم إنشاء حسابك بنجاح');}catch(e){notify(errorText(e),true);if(created)await signOut(auth).catch(()=>{});}finally{creating=false;b.disabled=false;}}
-function clearSubscriptions(){for(const fn of unsubscribe){try{fn();}catch{}}unsubscribe=[];subscriptionsReady=false;groupUsersLoaded=false;groupDocsLoaded=false;}
+function clearSubscriptions(){resetPdfFeeds();for(const fn of unsubscribe){try{fn();}catch{}}unsubscribe=[];subscriptionsReady=false;groupUsersLoaded=false;groupDocsLoaded=false;}
 async function activate(user){const gen=++bootId;clearSubscriptions();groupChoiceDismissed=false;groupChoiceSaving=false;try{const snap=await getDoc(doc(db,'users',user.uid));if(gen!==bootId||auth.currentUser?.uid!==user.uid)return;if(!snap.exists()){notify('ملف حسابك غير مكتمل؛ راجع Firebase أو أنشئ حسابًا جديدًا.',true);await signOut(auth);return;}if(snap.data().active!==true){notify('حسابك معطل.',true);await signOut(auth);return;}me={id:snap.id,...snap.data()};$('auth-wrap').classList.add('hidden');$('app-shell').classList.remove('hidden');setUIRole();showPage('dashboard');announcedIds=new Set();announcementsInitialized=false;closeAnnouncementPopup();startSubscriptions();const queryParams=new URLSearchParams(location.search);if(queryParams.get('attendance')&&queryParams.get('key')){scanned={id:queryParams.get('attendance'),token:queryParams.get('key')};showPage('attendance');loadScannedAttendance();}updatePresence();}catch(e){notify(errorText(e),true);}}
 function subscribe(name,q,callback){
  const stop=onSnapshot(q,s=>{
@@ -1048,7 +1060,7 @@ function subscribe(name,q,callback){
  });
  unsubscribe.push(stop);
 }
-function startSubscriptions(){if(subscriptionsReady)return;subscriptionsReady=true;
+function startSubscriptions(){if(subscriptionsReady)return;subscriptionsReady=true;startPdfFeeds();
  subscribe('platformQuestions',collection(db,'platformQuestions'),v=>{platformQuestions=v;questionFeedState='ready';rerender();});
  subscribe('myQuestionReceipts',query(collection(db,'questionReceipts'),where('uid','==',auth.currentUser.uid)),v=>{myQuestionReceipts=v;rerender();});
  if(editor())subscribe('allQuestionSubmissions',collection(db,'questionSubmissions'),v=>{allQuestionSubmissions=v;rerender();});
@@ -1091,7 +1103,7 @@ $('mobile-menu-toggle').addEventListener('click',()=>setMobileMenu(!$('site-side
 $('mobile-nav-scrim').addEventListener('click',()=>setMobileMenu(false));
 window.addEventListener('keydown',e=>{if(e.key==='Escape')setMobileMenu(false);});
 window.addEventListener('resize',()=>{if(window.innerWidth>680)setMobileMenu(false);});
-function showPage(page){if(!me)return;const allowed=['dashboard','members','groups','attendance','speeches','daily-activities','contests','announcements','questions','notifications','statistics','appearance'];if(editor())allowed.push('points','history','attendance-report');if(owner())allowed.push('backups','activity','site-settings');if(!allowed.includes(page)||(!editor()&&siteSettings.hiddenSections.includes(page)))page='dashboard';currentPage=page;setMobileMenu(false);document.querySelectorAll('.page').forEach(p=>p.classList.toggle('hidden',p.id!=='page-'+page));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.page===page));if(page==='notifications')markRead();renderPage();window.scrollTo({top:0,behavior:'smooth'});}
+function showPage(page){if(!me)return;const allowed=['pdf-files','dashboard','members','groups','attendance','speeches','daily-activities','contests','announcements','questions','notifications','statistics','appearance'];if(editor())allowed.push('points','history','attendance-report');if(owner())allowed.push('backups','activity','site-settings');if(!allowed.includes(page)||(!editor()&&siteSettings.hiddenSections.includes(page)))page='dashboard';currentPage=page;setMobileMenu(false);document.querySelectorAll('.page').forEach(p=>p.classList.toggle('hidden',p.id!=='page-'+page));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.page===page));if(page==='notifications')markRead();renderPage();window.scrollTo({top:0,behavior:'smooth'});}
 // ربط عناصر القائمة الجانبية بالنقر، بما فيها النصوص والأيقونات
 $('nav-list').addEventListener('click',event=>{
  const button=event.target.closest('button.nav[data-page]');
@@ -1100,7 +1112,7 @@ $('nav-list').addEventListener('click',event=>{
  showPage(button.dataset.page);
 });
 function rerender(){if(!me)return;renderDashboard();renderPage();renderNotifications(false);updateGroupChoiceUI();}
-function renderPage(){if(!me)return;const f={members:renderMembers,groups:renderGroups,points:fillCalcMembers,attendance:renderAttendance,speeches:renderSpeeches,'daily-activities':renderDailyActivities,appearance:renderAppearance,contests:renderContests,questions:renderQuestions,announcements:renderAnnouncements,notifications:()=>renderNotifications(true),'attendance-report':renderAttendanceReport,history:renderHistory,activity:renderAdminActivity,statistics:renderStats,backups:()=>{},'site-settings':()=>{if(owner()&&!settingsEditorDirty)resetSiteSettingsForm();}};if(f[currentPage])f[currentPage]();}
+function renderPage(){if(!me)return;const f={'pdf-files':renderPdfFiles,members:renderMembers,groups:renderGroups,points:fillCalcMembers,attendance:renderAttendance,speeches:renderSpeeches,'daily-activities':renderDailyActivities,appearance:renderAppearance,contests:renderContests,questions:renderQuestions,announcements:renderAnnouncements,notifications:()=>renderNotifications(true),'attendance-report':renderAttendanceReport,history:renderHistory,activity:renderAdminActivity,statistics:renderStats,backups:()=>{},'site-settings':()=>{if(owner()&&!settingsEditorDirty)resetSiteSettingsForm();}};if(f[currentPage])f[currentPage]();}
 async function handleLogout(){setMobileMenu(false);await signOut(auth);}
 onAuthStateChanged(auth,async u=>{if(creating)return;if(!u){bootId++;clearSubscriptions();me=null;users=[];groups=[];questionFeedState='loading';groupChoiceDismissed=false;groupChoiceSaving=false;$('group-choice-overlay').classList.add('hidden');pointsHidden=false;pointLogs=[];dailyActivities=[];platformQuestions=[];myQuestionReceipts=[];allQuestionSubmissions=[];announcedIds.clear();announcementsInitialized=false;closeAnnouncementPopup();$('app-shell').classList.add('hidden');$('auth-wrap').classList.remove('hidden');if(new URLSearchParams(location.search).has('attendance'))$('login-attendance-hint').classList.remove('hidden');return;}await activate(u);});
 async function updatePresence(){if(!me)return;try{await updateDoc(doc(db,'users',me.id),{lastSeen:serverTimestamp()});}catch(e){console.warn('presence',e);}}
@@ -1944,6 +1956,85 @@ async function restoreGroupsFromBackup(event){
   notify('تمت استعادة المجموعات بنجاح بدون تغيير نقاط الأعضاء');
  }catch(e){notify(errorText(e),true);}
 }
+
+// Reads use separate, permission-constrained queries. File bytes never use public download URLs.
+let pdfFeeds={},pdfErrors=new Set(),pdfBusy=false,pdfUploadTask=null,pdfEpoch=0;
+const PDF_MAX=25*1024*1024;
+function resetPdfFeeds(){
+ pdfEpoch++;if(pdfUploadTask){pdfUploadTask.cancel();pdfUploadTask=null;}
+ pdfFeeds={};pdfErrors.clear();
+ if($('pdf-list'))$('pdf-list').replaceChildren();
+ if($('pdf-form'))$('pdf-form').reset();
+ if($('pdf-status'))$('pdf-status').textContent='';
+}
+function startPdfFeeds(){
+ const epoch=pdfEpoch,uid=me.id;
+ const feeds=[['public',query(collection(db,'pdfFiles'),where('visibility','==','public'))],
+ ['private',query(collection(db,'pdfFiles'),where('visibility','==','private'),where('uid','==',uid))]];
+ if(editor())feeds.push(['staff',query(collection(db,'pdfFiles'),where('visibility','==','staff'))]);
+ for(const [key,q] of feeds){
+  pdfFeeds[key]=null;
+  unsubscribe.push(onSnapshot(q,snapshot=>{
+   if(epoch!==pdfEpoch)return;
+   pdfFeeds[key]=snapshot.docs.map(d=>({id:d.id,...d.data()}));pdfErrors.delete(key);renderPdfFiles();
+  },()=>{if(epoch!==pdfEpoch)return;pdfFeeds[key]=[];pdfErrors.add(key);renderPdfFiles();}));
+ }
+}
+function renderPdfFiles(){
+ if(!me)return;
+ $('pdf-visibility-field').classList.toggle('hidden',!editor());
+ $('pdf-policy').textContent=editor()?'«أنا فقط»: يظهر لك وحدك. «جميع أعضاء الموقع»: يظهر لكل المسجلين النشطين. ملفات الطلاب تظهر للمالك والمشرفين فقط.':'ملفك سيُرسل للمالك والمشرفين فقط، ولن يظهر للطلاب أو في قائمتك بعد إرساله.';
+ const root=$('pdf-list');root.replaceChildren();
+ if(pdfErrors.size){const el=document.createElement('p');el.className='notice';el.textContent='تعذر تحميل بعض الملفات. تأكد من نشر قواعد Firestore الجديدة ثم حدّث الصفحة.';root.append(el);}
+ if(Object.values(pdfFeeds).some(v=>v===null)){const el=document.createElement('p');el.textContent='جار تحميل الملفات…';root.append(el);}
+ const rows=Object.values(pdfFeeds).flatMap(v=>v||[]).sort(sortDate);
+ if(!rows.length&&!pdfErrors.size&&!Object.values(pdfFeeds).some(v=>v===null))root.innerHTML='<div class="empty">لا توجد ملفات متاحة لك بعد</div>';
+ for(const item of rows){
+  const box=document.createElement('div');box.className='mini-row';
+  const detail=document.createElement('div'),title=document.createElement('b'),info=document.createElement('small');
+  title.textContent=item.title;
+  info.textContent=item.memberName+' • '+(item.fileSize/1048576).toFixed(2)+' MB • '+fmt(item.createdAt)+' • '+({public:'للجميع',private:'أنا فقط',staff:'للإدارة فقط'}[item.visibility]);
+  detail.append(title,info);
+  const button=document.createElement('button');button.className='btn sm';button.textContent='تحميل PDF';
+  button.onclick=async()=>{
+   button.disabled=true;const epoch=pdfEpoch;
+   try{
+    const blob=await getBlob(storageRef(pdfStorage,'culturalPdf/'+item.id),PDF_MAX);
+    if(epoch!==pdfEpoch)return;
+    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=item.fileName;a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+   }catch(e){notify('تعذر تحميل الملف. تحقق من صلاحيات الملف وإعداد CORS في Storage.',true);}
+   finally{button.disabled=false;}
+  };
+  box.append(detail,button);root.append(box);
+ }
+}
+$('pdf-form').addEventListener('submit',async event=>{
+ event.preventDefault();if(pdfBusy||!me?.active)return;
+ const file=$('pdf-input').files[0],title=$('pdf-title').value.trim(),uid=me.id,epoch=pdfEpoch;
+ const visibility=editor()?$('pdf-visibility').value:'staff';
+ if(!title||title.length>120||!file||!file.name.toLowerCase().endsWith('.pdf')||file.size<5||file.size>PDF_MAX)return notify('اختر ملف PDF صالحًا حتى 25 ميجابايت واكتب عنوانه.',true);
+ pdfBusy=true;$('pdf-submit').disabled=true;
+ let record=null,uploaded=false;
+ try{
+  const signature=new Uint8Array(await file.slice(0,5).arrayBuffer());
+  if(String.fromCharCode(...signature)!=='%PDF-')throw Error('محتوى الملف ليس PDF صالحًا.');
+  if(epoch!==pdfEpoch)return;
+  record=doc(collection(db,'pdfFiles'));
+  await setDoc(record,{uid,memberName:me.fullname,title,fileName:file.name.slice(0,200),fileSize:file.size,visibility,createdAt:serverTimestamp()});
+  if(epoch!==pdfEpoch)return;
+  pdfUploadTask=uploadBytesResumable(storageRef(pdfStorage,'culturalPdf/'+record.id),file,{contentType:'application/pdf'});
+  await new Promise((resolve,reject)=>pdfUploadTask.on('state_changed',snap=>{
+   if(epoch===pdfEpoch)$('pdf-status').textContent='جار الرفع: '+Math.round(100*snap.bytesTransferred/snap.totalBytes)+'٪';
+  },reject,resolve));
+  uploaded=true;
+  if(epoch!==pdfEpoch)return;
+  $('pdf-form').reset();$('pdf-status').textContent=visibility==='staff'?'تم إرسال الملف للمالك والمشرفين فقط.':'تم رفع الملف بنجاح.';
+ }catch(e){
+  if(record&&!uploaded)await deleteDoc(record).catch(()=>{});
+  if(epoch===pdfEpoch){$('pdf-status').textContent='لم يكتمل الرفع. تأكد من تفعيل Storage ونشر قواعد الحماية ثم حاول مجددًا.';notify(e.message||'تعذر رفع الملف',true);}
+ }finally{pdfUploadTask=null;pdfBusy=false;$('pdf-submit').disabled=false;}
+});
 
 Object.assign(window,{markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
 
