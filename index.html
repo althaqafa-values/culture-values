@@ -203,7 +203,8 @@ html[data-theme="white"] .activity-chip .activity-desc{color:#57647b}
 .announcement-ticker .ticker-label{color:#ffda8a;white-space:nowrap;font-weight:900;display:flex;align-items:center;gap:8px;flex:none}
 .announcement-ticker .ticker-window{position:relative;overflow:hidden;flex:1;min-width:0;direction:ltr}
 .announcement-ticker .ticker-track{display:inline-block;white-space:nowrap;min-width:max-content;color:#f5e9ff;animation:news-marquee 22s linear infinite;font-weight:800;line-height:1.8}
-.announcement-ticker .ticker-track span{padding-inline:18px}.announcement-ticker .ticker-track b{color:#f7d280}
+.announcement-ticker .ticker-track > span{display:inline-block;direction:rtl;unicode-bidi:isolate;text-align:right;padding-inline:18px}
+.announcement-ticker .ticker-track b{color:#f7d280}
 .announcement-ticker .ticker-track::after{content:'✦';color:#e0b85f;padding:0 14px}
 .announcement-ticker:hover .ticker-track,.announcement-ticker:focus-within .ticker-track{animation-play-state:paused}
 @keyframes news-marquee{from{transform:translateX(70vw)}to{transform:translateX(-100%)}}
@@ -977,7 +978,7 @@ function renderAnnouncementTicker(){
  const latest=latestAnnouncementForBanner();
  box.classList.toggle('hidden',!latest);
  if(!latest){track.textContent='';return;}
- track.innerHTML=`<span><b>${safe(latest.title)}</b> — ${safe(latest.body).slice(0,130)}</span>`;
+ track.innerHTML=`<span dir="rtl"><b>${safe(latest.title)}</b> — ${safe(latest.body).slice(0,130)}</span>`;
 }
 function onAnnouncementsChanged(items){renderAnnouncementTicker();}
 // مراقبة انتهاء الإعلان دون تغيير بياناته أو حاجة لإعادة نشر الموقع.
