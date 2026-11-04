@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>الثقافة والقيم | منصة الأنشطة والنقاط</title>
+<title id="site-browser-title">الثقافة والقيم | منصة الأنشطة والنقاط</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -446,6 +446,61 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
   #auth-wrap .card.auth,#auth-wrap .auth-header i{animation:none!important;transition:none!important}
 }
 
+
+/* ===== عشر ثيمات مستقلة لكل متصفح ===== */
+.theme-choices{grid-template-columns:repeat(5,minmax(0,1fr))}
+.theme-button{min-height:110px}
+.theme-button .swatch{box-shadow:0 4px 14px #0006}
+.theme-button[data-theme-button="purple"] .swatch{background:linear-gradient(135deg,#6625b9,#b28cff)}
+.theme-button[data-theme-button="green"] .swatch{background:linear-gradient(135deg,#076945,#42bd8c)}
+.theme-button[data-theme-button="red"] .swatch{background:linear-gradient(135deg,#7b102b,#ee5c6f)}
+.theme-button[data-theme-button="pink"] .swatch{background:linear-gradient(135deg,#982463,#f5a4d1)}
+.theme-button[data-theme-button="gold"] .swatch{background:linear-gradient(135deg,#806016,#ecc15a)}
+.theme-button[data-theme-button="cyan"] .swatch{background:linear-gradient(135deg,#086077,#69e3ed)}
+.theme-button[data-theme-button="gray"] .swatch{background:linear-gradient(135deg,#313947,#98a5b7)}
+/* تدرجات جديدة لا تغير الثيمات القديمة الأسود/الأبيض/الأزرق */
+html[data-theme="purple"]{--theme-1:#21113e;--theme-2:#0e0b22;--theme-side:#170d31;--theme-card:#281849;--theme-border:#5c3d8f;--theme-accent:#be91ff}
+html[data-theme="green"]{--theme-1:#073e31;--theme-2:#061a1a;--theme-side:#07291f;--theme-card:#0b392e;--theme-border:#2c7561;--theme-accent:#7ce9bf}
+html[data-theme="red"]{--theme-1:#461525;--theme-2:#1a0b15;--theme-side:#300e1e;--theme-card:#421729;--theme-border:#8e3a57;--theme-accent:#ffb0b2}
+html[data-theme="pink"]{--theme-1:#4a1648;--theme-2:#1c0e25;--theme-side:#371337;--theme-card:#451b4d;--theme-border:#90518f;--theme-accent:#ffb7e0}
+html[data-theme="gold"]{--theme-1:#493513;--theme-2:#1c160e;--theme-side:#352710;--theme-card:#40311a;--theme-border:#977643;--theme-accent:#ffe19c}
+html[data-theme="cyan"]{--theme-1:#0c405a;--theme-2:#061925;--theme-side:#0a3447;--theme-card:#0b3950;--theme-border:#337e97;--theme-accent:#9ceff7}
+html[data-theme="gray"]{--theme-1:#333948;--theme-2:#101620;--theme-side:#242b38;--theme-card:#2b3342;--theme-border:#627086;--theme-accent:#dae2f1}
+html[data-theme="purple"],html[data-theme="green"],html[data-theme="red"],html[data-theme="pink"],html[data-theme="gold"],html[data-theme="cyan"],html[data-theme="gray"]{color-scheme:dark}
+html[data-theme="purple"] body,html[data-theme="green"] body,html[data-theme="red"] body,html[data-theme="pink"] body,html[data-theme="gold"] body,html[data-theme="cyan"] body,html[data-theme="gray"] body{background:radial-gradient(ellipse at top,var(--theme-1),var(--theme-2) 75%);color:#f8f7ff}
+html[data-theme="purple"] .side,html[data-theme="green"] .side,html[data-theme="red"] .side,html[data-theme="pink"] .side,html[data-theme="gold"] .side,html[data-theme="cyan"] .side,html[data-theme="gray"] .side{background:linear-gradient(180deg,var(--theme-side),var(--theme-2));border-color:var(--theme-border)}
+html[data-theme="purple"] .card,html[data-theme="green"] .card,html[data-theme="red"] .card,html[data-theme="pink"] .card,html[data-theme="gold"] .card,html[data-theme="cyan"] .card,html[data-theme="gray"] .card,
+html[data-theme="purple"] .stat,html[data-theme="green"] .stat,html[data-theme="red"] .stat,html[data-theme="pink"] .stat,html[data-theme="gold"] .stat,html[data-theme="cyan"] .stat,html[data-theme="gray"] .stat{background:linear-gradient(155deg,var(--theme-card),var(--theme-2));border-color:var(--theme-border)}
+html[data-theme="purple"] .banner,html[data-theme="green"] .banner,html[data-theme="red"] .banner,html[data-theme="pink"] .banner,html[data-theme="gold"] .banner,html[data-theme="cyan"] .banner,html[data-theme="gray"] .banner{background:linear-gradient(100deg,var(--theme-card),var(--theme-1));border-color:var(--theme-border)}
+html[data-theme="purple"] .banner h1,html[data-theme="green"] .banner h1,html[data-theme="red"] .banner h1,html[data-theme="pink"] .banner h1,html[data-theme="gold"] .banner h1,html[data-theme="cyan"] .banner h1,html[data-theme="gray"] .banner h1{color:var(--theme-accent)}
+html[data-theme="purple"] .mini-row,html[data-theme="green"] .mini-row,html[data-theme="red"] .mini-row,html[data-theme="pink"] .mini-row,html[data-theme="gold"] .mini-row,html[data-theme="cyan"] .mini-row,html[data-theme="gray"] .mini-row,
+html[data-theme="purple"] .activity-row,html[data-theme="green"] .activity-row,html[data-theme="red"] .activity-row,html[data-theme="pink"] .activity-row,html[data-theme="gold"] .activity-row,html[data-theme="cyan"] .activity-row,html[data-theme="gray"] .activity-row,
+html[data-theme="purple"] .activity-chip,html[data-theme="green"] .activity-chip,html[data-theme="red"] .activity-chip,html[data-theme="pink"] .activity-chip,html[data-theme="gold"] .activity-chip,html[data-theme="cyan"] .activity-chip,html[data-theme="gray"] .activity-chip,
+html[data-theme="purple"] .user-pill,html[data-theme="green"] .user-pill,html[data-theme="red"] .user-pill,html[data-theme="pink"] .user-pill,html[data-theme="gold"] .user-pill,html[data-theme="cyan"] .user-pill,html[data-theme="gray"] .user-pill,
+html[data-theme="purple"] .listitem,html[data-theme="green"] .listitem,html[data-theme="red"] .listitem,html[data-theme="pink"] .listitem,html[data-theme="gold"] .listitem,html[data-theme="cyan"] .listitem,html[data-theme="gray"] .listitem,
+html[data-theme="purple"] .theme-switcher,html[data-theme="green"] .theme-switcher,html[data-theme="red"] .theme-switcher,html[data-theme="pink"] .theme-switcher,html[data-theme="gold"] .theme-switcher,html[data-theme="cyan"] .theme-switcher,html[data-theme="gray"] .theme-switcher{background:var(--theme-card);border-color:var(--theme-border)}
+html[data-theme="purple"] .nav.active,html[data-theme="green"] .nav.active,html[data-theme="red"] .nav.active,html[data-theme="pink"] .nav.active,html[data-theme="gold"] .nav.active,html[data-theme="cyan"] .nav.active,html[data-theme="gray"] .nav.active{background:linear-gradient(100deg,var(--theme-1),var(--theme-card));box-shadow:inset 0 0 0 1px var(--theme-border)}
+/* اسم وشعار الموقع */
+.site-custom-logo{max-height:55px;max-width:150px;object-fit:contain;vertical-align:middle;filter:drop-shadow(0 1px 8px #0005)}
+.brand .site-custom-logo{height:47px;max-width:76px;display:block;margin:0 auto 6px}
+.auth-header .site-custom-logo{height:56px;display:block;margin:0 auto 10px}
+.banner .site-custom-logo{height:62px;max-width:80px}
+.site-logo-preview{min-height:95px;border:1px dashed #6f5b99;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:11px;color:var(--muted);padding:12px;margin-top:14px}
+.site-logo-preview img{max-height:70px;max-width:190px;object-fit:contain}
+.settings-toggles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.settings-toggle{border:1px solid #494269;background:#151a33;border-radius:10px;padding:11px 10px;display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;font-weight:700}
+.settings-toggle input{width:17px;height:17px;accent-color:#a679eb}
+.settings-order{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.settings-order-row{display:flex;align-items:center;gap:8px;background:#141a30;border:1px solid #494269;border-radius:10px;padding:8px 11px;min-width:0}
+.settings-order-row .order-name{flex:1;min-width:0;font-size:13px;font-weight:700;overflow-wrap:anywhere}
+.settings-order-row .btn{padding:6px 9px;min-width:30px}
+html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-order-row{background:#f1f3fc;border-color:#cdd6e8;color:#263550}
+/* الوضع المخفي لا يلغي صلاحيات Firestore؛ هو فقط لإدارة ظهور الأقسام */
+.site-hidden{display:none!important}
+@media(max-width:780px){.theme-choices{grid-template-columns:repeat(3,minmax(0,1fr))}.settings-toggles,.settings-order{grid-template-columns:1fr}}
+@media(max-width:440px){.theme-choices{grid-template-columns:repeat(2,minmax(0,1fr))}.theme-button{min-height:90px}}
+@media(max-width:680px){html[data-theme="purple"] .shell>.side,html[data-theme="green"] .shell>.side,html[data-theme="red"] .shell>.side,html[data-theme="pink"] .shell>.side,html[data-theme="gold"] .shell>.side,html[data-theme="cyan"] .shell>.side,html[data-theme="gray"] .shell>.side{background:var(--theme-side)}}
+
 </style>
 </head>
 <body>
@@ -489,7 +544,7 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
   <span class="login-spark" style="--x:60%;--y:43%;--size:3px;--dur:9s;--delay:-12.4s;--tone:#6e8bd9"></span>
  </div>
  <div class="card auth">
-  <div class="auth-header"><i class="fa-solid fa-book-open-reader"></i><h1>الثقافة والقيم</h1><p class="muted">منصة الثقافة والارتقاء بالمستوى</p></div>
+  <div class="auth-header"><i class="fa-solid fa-book-open-reader"></i><h1 id="site-auth-title">الثقافة والقيم</h1><p class="muted" id="site-auth-description">منصة الثقافة والارتقاء بالمستوى</p></div>
   <div class="auth-tabs"><button class="btn gold" id="login-tab" onclick="switchAuth('login')">تسجيل الدخول</button><button class="btn outline" id="register-tab" onclick="switchAuth('register')">إنشاء حساب</button></div>
   <form id="login-form" onsubmit="handleLogin(event)"><div class="field"><label>البريد الإلكتروني</label><input class="input" type="email" id="login-email" required autocomplete="email"></div><div class="field"><label>كلمة المرور</label><input class="input" type="password" id="login-password" required autocomplete="current-password"></div><div class="forgot-action"><button class="forgot-link" type="button" onclick="switchAuth('reset')"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button></div><button class="btn gold full">دخول <i class="fa-solid fa-arrow-left"></i></button></form>
   <form id="reset-form" class="hidden" onsubmit="handlePasswordReset(event)">
@@ -507,7 +562,7 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
 <div id="app-shell" class="shell hidden">
 <div id="mobile-nav-scrim" class="mobile-nav-scrim hidden" aria-hidden="true"></div>
 <aside class="side" id="site-sidebar" aria-label="قائمة أقسام الموقع">
- <div class="brand"><span class="emblem"><i class="fa-solid fa-book-open-reader"></i></span><span>الثقافة والقيم</span></div>
+ <div class="brand"><span class="emblem"><i class="fa-solid fa-book-open-reader"></i></span><span id="site-sidebar-title">الثقافة والقيم</span></div>
  <div id="nav-list">
   <button class="nav active" data-page="dashboard"><i class="fa-solid fa-house"></i><span>الرئيسية</span></button>
   <button class="nav" data-page="members"><i class="fa-solid fa-users"></i><span>الأعضاء والمراكز</span></button>
@@ -525,13 +580,14 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
   <button class="nav owner-nav" data-page="activity"><i class="fa-solid fa-shield-halved"></i><span>نشاط المشرفين</span></button>
   <button class="nav" data-page="statistics"><i class="fa-solid fa-chart-column"></i><span>الإحصائيات</span></button>
   <button class="nav" data-page="appearance"><i class="fa-solid fa-palette"></i><span>المظهر والألوان</span></button>
+  <button class="nav owner-nav" data-page="site-settings"><i class="fa-solid fa-sliders"></i><span>إعدادات الموقع</span></button>
   <button class="nav owner-nav" data-page="backups"><i class="fa-solid fa-box-archive"></i><span>النسخ الاحتياطي</span></button>
  </div>
  <div class="side-bottom"><div class="owner-chip"><b id="sidebar-name">العضو</b><small id="sidebar-role">عضو</small></div><button class="btn outline full" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i>تسجيل الخروج</button></div>
 </aside>
 <div class="main">
- <div class="top"><button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="فتح قائمة الأقسام" aria-controls="site-sidebar" aria-expanded="false"><i class="fa-solid fa-bars"></i><span>القائمة</span></button><div class="user-pill"><i class="fa-solid fa-crown"></i><span id="top-name">مرحبًا</span> <small class="pill" id="top-role">عضو</small> <small class="pill hidden" id="top-group"></small></div><div class="theme-switcher"><label for="quick-theme">الخلفية</label><select id="quick-theme" aria-label="لون خلفية الموقع" onchange="chooseTheme(this.value)"><option value="black">أسود</option><option value="white">أبيض</option><option value="blue">أزرق</option></select></div><div class="top-search"><input class="input" id="global-search" placeholder="ابحث عن عضو..." oninput="searchMemberFromTop()"></div><button class="icon-mini" onclick="showPage('notifications')" title="الإشعارات"><i class="fa-solid fa-bell"></i><span class="dot hidden" id="nav-dot">0</span></button></div>
- <div class="banner"><div><small>مرحبًا بك في</small><h1>الثقافة والقيم <i class="fa-solid fa-star gold-text"></i></h1><p>منصة تعزز القيم وتنمّي الثقافة وتجمعنا على الخير</p></div><div class="banner-icon"><i class="fa-solid fa-book-open-reader"></i></div></div>
+ <div class="top"><button type="button" class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="فتح قائمة الأقسام" aria-controls="site-sidebar" aria-expanded="false"><i class="fa-solid fa-bars"></i><span>القائمة</span></button><div class="user-pill"><i class="fa-solid fa-crown"></i><span id="top-name">مرحبًا</span> <small class="pill" id="top-role">عضو</small> <small class="pill hidden" id="top-group"></small></div><div class="theme-switcher"><label for="quick-theme">الخلفية</label><select id="quick-theme" aria-label="لون خلفية الموقع" onchange="chooseTheme(this.value)"><option value="black">أسود</option><option value="white">أبيض</option><option value="blue">أزرق</option><option value="purple">بنفسجي</option><option value="green">أخضر</option><option value="red">أحمر</option><option value="pink">وردي</option><option value="gold">ذهبي</option><option value="cyan">سماوي</option><option value="gray">رمادي</option></select></div><div class="top-search"><input class="input" id="global-search" placeholder="ابحث عن عضو..." oninput="searchMemberFromTop()"></div><button class="icon-mini" onclick="showPage('notifications')" title="الإشعارات"><i class="fa-solid fa-bell"></i><span class="dot hidden" id="nav-dot">0</span></button></div>
+ <div class="banner"><div><small>مرحبًا بك في</small><h1><span id="site-banner-title">الثقافة والقيم</span> <i class="fa-solid fa-star gold-text"></i></h1><p id="site-banner-description">منصة تعزز القيم وتنمّي الثقافة وتجمعنا على الخير</p></div><div class="banner-icon"><i class="fa-solid fa-book-open-reader"></i></div></div>
  <div id="announcement-ticker" class="announcement-ticker hidden" aria-label="شريط الإعلانات"><span class="ticker-label"><i class="fa-solid fa-bullhorn"></i> آخر الإعلانات</span><div class="ticker-window"><div id="announcement-ticker-track" class="ticker-track"></div></div><button class="btn sm outline" type="button" onclick="showPage('announcements')">كل الإعلانات</button></div>
  <section id="page-dashboard" class="page">
   <div class="stats" id="dash-stats"></div>
@@ -593,6 +649,36 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
   </div>
   <div class="card" style="margin-top:14px"><div class="subhead"><h3><i class="fa-solid fa-list-check"></i>الجدول لجميع الطلاب</h3><span class="pill">يتحدث مباشرة</span></div><div id="daily-activities-list"></div></div>
  </section>
+
+ <section id="page-site-settings" class="page hidden">
+  <h2 class="page-head"><i class="fa-solid fa-sliders"></i>لوحة إعدادات الموقع</h2>
+  <div class="notice"><i class="fa-solid fa-lock"></i> هذه اللوحة للمالك فقط. تغييرات الاسم والشعار والقائمة تظهر لجميع الأعضاء بعد الحفظ؛ ولا تغيّر حساباتهم أو نقاطهم.</div>
+  <div class="grid">
+   <div class="card span6">
+    <h3><i class="fa-solid fa-pen"></i> هوية المنصة</h3>
+    <div class="field"><label for="settings-name">اسم المنصة</label><input class="input" id="settings-name" maxlength="70" placeholder="الثقافة والقيم" oninput="markSiteSettingsDirty()"></div>
+    <div class="field"><label for="settings-description">وصف المنصة</label><textarea id="settings-description" maxlength="180" rows="3" placeholder="منصة تعزز القيم..." oninput="markSiteSettingsDirty()"></textarea></div>
+    <div class="field"><label for="settings-logo">رابط صورة الشعار (HTTPS) — اختياري</label><input class="input" id="settings-logo" type="url" maxlength="500" placeholder="https://example.com/logo.png" dir="ltr" oninput="markSiteSettingsDirty()" onchange="renderSiteSettings()"></div>
+    <div class="field"><label for="settings-default-theme">اللون الافتراضي للزوار والطلاب الجدد</label><select id="settings-default-theme" class="input" onchange="markSiteSettingsDirty()"><option value="black">أسود</option><option value="white">أبيض</option><option value="blue">أزرق</option><option value="purple">بنفسجي</option><option value="green">أخضر</option><option value="red">أحمر</option><option value="pink">وردي</option><option value="gold">ذهبي</option><option value="cyan">سماوي</option><option value="gray">رمادي</option></select></div>
+    <p class="hint">ضع رابط صورة عامة مباشرة بصيغة PNG أو JPG أو WebP. لا تحتاج رفع الصورة إلى Firebase Storage.</p>
+    <div id="settings-logo-preview" class="site-logo-preview"><i class="fa-solid fa-book-open-reader"></i><span>معاينة الشعار</span></div>
+   </div>
+   <div class="card span6">
+    <h3><i class="fa-solid fa-eye"></i> الأقسام الظاهرة للطلاب</h3>
+    <p class="hint">أزل العلامة عن القسم لإخفائه من قائمة الطلاب والصفحة الرئيسية. تبقى الأقسام الإدارية متاحة للمالك والمشرفين.</p>
+    <div id="settings-section-visibility" class="settings-toggles"></div>
+   </div>
+   <div class="card span12">
+    <h3><i class="fa-solid fa-list-ol"></i> ترتيب القائمة الجانبية</h3>
+    <p class="hint">استخدم الأسهم لرفع أو خفض القسم في القائمة. ترتيب الأقسام يُحفظ لجميع الأعضاء.</p>
+    <div id="settings-nav-order" class="settings-order"></div>
+   </div>
+   <div class="card span12">
+    <div class="actions"><button type="button" class="btn green" id="save-site-settings" onclick="saveSiteSettings()"><i class="fa-solid fa-floppy-disk"></i> حفظ إعدادات الموقع</button><button type="button" class="btn outline" onclick="resetSiteSettingsForm()"><i class="fa-solid fa-rotate-left"></i> إلغاء التعديلات غير المحفوظة</button></div>
+    <p id="settings-save-status" class="hint" role="status" aria-live="polite" style="margin-top:11px">الإعدادات متزامنة مع Firebase.</p>
+   </div>
+  </div>
+ </section>
  <section id="page-appearance" class="page hidden">
   <h2 class="page-head"><i class="fa-solid fa-palette"></i>لون خلفية الموقع</h2>
   <div class="card"><h3>اختر اللون اللي يناسبك</h3><p class="hint">اختيار اللون خاص بجهازك ومتصفحك، وما يغيّر ألوان الموقع عند بقية الأعضاء.</p>
@@ -600,6 +686,13 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
     <button type="button" class="theme-button" data-theme-button="black" onclick="chooseTheme('black')"><span class="swatch"></span><span>أسود</span></button>
     <button type="button" class="theme-button" data-theme-button="white" onclick="chooseTheme('white')"><span class="swatch"></span><span>أبيض</span></button>
     <button type="button" class="theme-button" data-theme-button="blue" onclick="chooseTheme('blue')"><span class="swatch"></span><span>أزرق</span></button>
+    <button type="button" class="theme-button" data-theme-button="purple" onclick="chooseTheme('purple')"><span class="swatch"></span><span>بنفسجي</span></button>
+    <button type="button" class="theme-button" data-theme-button="green" onclick="chooseTheme('green')"><span class="swatch"></span><span>أخضر</span></button>
+    <button type="button" class="theme-button" data-theme-button="red" onclick="chooseTheme('red')"><span class="swatch"></span><span>أحمر</span></button>
+    <button type="button" class="theme-button" data-theme-button="pink" onclick="chooseTheme('pink')"><span class="swatch"></span><span>وردي</span></button>
+    <button type="button" class="theme-button" data-theme-button="gold" onclick="chooseTheme('gold')"><span class="swatch"></span><span>ذهبي</span></button>
+    <button type="button" class="theme-button" data-theme-button="cyan" onclick="chooseTheme('cyan')"><span class="swatch"></span><span>سماوي</span></button>
+    <button type="button" class="theme-button" data-theme-button="gray" onclick="chooseTheme('gray')"><span class="swatch"></span><span>رمادي</span></button>
    </div>
   </div>
  </section>
@@ -707,9 +800,146 @@ let announcedIds=new Set(),announcementsInitialized=false,announcementPopupTimeo
 let readLogIds=new Set();
 try{readLogIds=new Set(JSON.parse(localStorage.getItem('culture_read_ids')||'[]'));}catch{}
 function notify(msg,err=false){let el=$('toast');el.textContent=msg;el.style.borderColor=err?'#ff617a':'#8b5cf6';el.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hidden'),4800);}
+
+// إعدادات واجهة الموقع — بيانات عامة آمنة (لا تحتوي على معلومات طلاب).
+const DEFAULT_SITE_SETTINGS={siteName:'الثقافة والقيم',siteDescription:'منصة تعزز القيم وتنمّي الثقافة وتجمعنا على الخير',logoUrl:'',defaultTheme:'black',hiddenSections:[],navOrder:[]};
+const VISIBLE_SECTIONS=['members','groups','attendance','speeches','daily-activities','contests','questions','announcements','statistics'];
+const THEME_OPTIONS=['black','white','blue','purple','green','red','pink','gold','cyan','gray'];
+let siteSettings={...DEFAULT_SITE_SETTINGS};
+let settingsDraftOrder=[],settingsDraftHidden=new Set(),settingsEditorDirty=false;
+const allNavButtons=()=>Array.from(document.querySelectorAll('#nav-list .nav[data-page]'));
+const defaultSiteNavOrder=()=>allNavButtons().map(b=>b.dataset.page);
+function normalizeSiteSettings(raw){
+ const defaults=defaultSiteNavOrder();
+ const order=Array.isArray(raw?.navOrder)?raw.navOrder.filter(x=>defaults.includes(x)):[];
+ const unique=[...new Set([...order,...defaults])];
+ return {siteName:typeof raw?.siteName==='string'&&raw.siteName.trim()?raw.siteName:DEFAULT_SITE_SETTINGS.siteName,
+   siteDescription:typeof raw?.siteDescription==='string'?raw.siteDescription:DEFAULT_SITE_SETTINGS.siteDescription,
+   logoUrl:typeof raw?.logoUrl==='string'?raw.logoUrl:'',
+   defaultTheme:THEME_OPTIONS.includes(raw?.defaultTheme)?raw.defaultTheme:'black',
+   hiddenSections:Array.isArray(raw?.hiddenSections)?[...new Set(raw.hiddenSections.filter(x=>VISIBLE_SECTIONS.includes(x)))]:[],
+   navOrder:unique};
+}
+function updateLogoLocation(host,logo){
+ if(!host)return;
+ const old=host.querySelector('.site-custom-logo');if(old)old.remove();
+ const icon=host.querySelector('i');
+ if(icon)icon.classList.remove('hidden');
+ if(!logo)return;
+ const img=document.createElement('img');img.className='site-custom-logo';img.alt='شعار '+siteSettings.siteName;
+ img.referrerPolicy='no-referrer';
+ img.onerror=()=>{img.remove();if(icon)icon.classList.remove('hidden');};
+ img.onload=()=>{if(icon)icon.classList.add('hidden');};
+ img.src=logo;host.appendChild(img);
+}
+function updateSiteBrand(){
+ const {siteName,siteDescription,logoUrl}=siteSettings;
+ const targets={'site-auth-title':siteName,'site-sidebar-title':siteName,'site-banner-title':siteName,
+  'site-auth-description':siteDescription,'site-banner-description':siteDescription};
+ for(const [id,value] of Object.entries(targets)){const el=$(id);if(el)el.textContent=value;}
+ document.title=siteName+' | منصة الأنشطة والنقاط';
+ updateLogoLocation(document.querySelector('.auth-header'),logoUrl);
+ updateLogoLocation(document.querySelector('.brand .emblem'),logoUrl);
+ updateLogoLocation(document.querySelector('.banner .banner-icon'),logoUrl);
+}
+function applySiteNavigation(){
+ const nav=$('nav-list'),buttons=allNavButtons(),lookup=new Map(buttons.map(b=>[b.dataset.page,b]));
+ const order=normalizeSiteSettings(siteSettings).navOrder;
+ order.forEach(page=>{const button=lookup.get(page);if(button)nav.appendChild(button);});
+ const restricted=!editor();
+ for(const button of buttons){button.classList.toggle('site-hidden',restricted&&siteSettings.hiddenSections.includes(button.dataset.page));}
+ // كل بطاقة في الرئيسية تفتح صفحة واحدة؛ عند إخفائها من الطلاب تختفي البطاقة أيضًا.
+ document.querySelectorAll('#page-dashboard .card').forEach(card=>{
+  const pages=[...card.querySelectorAll('[onclick*="showPage("]')].map(b=>b.getAttribute('onclick')?.match(/showPage\('([^']+)'\)/)?.[1]).filter(Boolean);
+  const invisible=restricted&&pages.length>0&&pages.every(page=>siteSettings.hiddenSections.includes(page));
+  card.classList.toggle('site-hidden',invisible);
+ });
+ if(me&&restricted&&siteSettings.hiddenSections.includes(currentPage))showPage('dashboard');
+}
+function applySiteSettings(){updateSiteBrand();applySiteNavigation();try{if(!localStorage.getItem(COLOR_KEY))chooseTheme(siteSettings.defaultTheme);}catch{}}
+function validateLogoUrl(value){
+ if(!value)return true;
+ try{const u=new URL(value);return u.protocol==='https:'&&u.username===''&&u.password==='';}catch{return false;}
+}
+function markSiteSettingsDirty(){settingsEditorDirty=true;}
+function renderSiteSettings(){
+ if(!owner())return;
+ const names={};
+ for(const button of allNavButtons()){names[button.dataset.page]=button.querySelector('span')?.textContent.trim()||button.dataset.page;}
+ const toggles=$('settings-section-visibility');toggles.replaceChildren();
+ for(const id of VISIBLE_SECTIONS){
+  const label=document.createElement('label');label.className='settings-toggle';
+  const check=document.createElement('input');check.type='checkbox';check.checked=!settingsDraftHidden.has(id);
+  check.onchange=()=>{if(check.checked)settingsDraftHidden.delete(id);else settingsDraftHidden.add(id);markSiteSettingsDirty();};
+  label.append(check,document.createTextNode(names[id]||id));toggles.appendChild(label);
+ }
+ const orderBox=$('settings-nav-order');orderBox.replaceChildren();
+ settingsDraftOrder.forEach((id,index)=>{
+  const row=document.createElement('div');row.className='settings-order-row';
+  const number=document.createElement('span');number.className='muted';number.textContent=(index+1)+'.';
+  const name=document.createElement('span');name.className='order-name';name.textContent=names[id]||id;
+  const up=document.createElement('button');up.type='button';up.className='btn sm outline';up.title='رفع القسم للأعلى';up.textContent='↑';up.disabled=index===0;
+  up.onclick=()=>moveSiteSection(index,-1);
+  const down=document.createElement('button');down.type='button';down.className='btn sm outline';down.title='خفض القسم للأسفل';down.textContent='↓';down.disabled=index===settingsDraftOrder.length-1;
+  down.onclick=()=>moveSiteSection(index,1);
+  row.append(number,name,up,down);orderBox.appendChild(row);
+ });
+ const preview=$('settings-logo-preview');preview.replaceChildren();
+ const raw=$('settings-logo').value.trim();
+ if(raw&&validateLogoUrl(raw)){
+  const img=document.createElement('img');img.src=raw;img.alt='معاينة شعار المنصة';
+  img.onerror=()=>{preview.textContent='تعذر عرض الشعار؛ تأكد من رابط الصورة المباشر.'};preview.appendChild(img);
+ }else{const icon=document.createElement('i');icon.className='fa-solid fa-book-open-reader';preview.append(icon,document.createTextNode(' معاينة الشعار'))};
+}
+function resetSiteSettingsForm(){
+ if(!owner())return;
+ settingsDraftOrder=[...normalizeSiteSettings(siteSettings).navOrder];
+ settingsDraftHidden=new Set(siteSettings.hiddenSections);
+ $('settings-name').value=siteSettings.siteName;
+ $('settings-description').value=siteSettings.siteDescription;
+ $('settings-logo').value=siteSettings.logoUrl;
+ $('settings-default-theme').value=siteSettings.defaultTheme;
+ settingsEditorDirty=false;
+ renderSiteSettings();
+ $('settings-save-status').textContent='الإعدادات الحالية محفوظة في Firebase.';
+}
+function moveSiteSection(index,delta){
+ if(!owner())return;
+ const at=index+delta;
+ if(at<0||at>=settingsDraftOrder.length)return;
+ [settingsDraftOrder[index],settingsDraftOrder[at]]=[settingsDraftOrder[at],settingsDraftOrder[index]];
+ markSiteSettingsDirty();renderSiteSettings();
+}
+async function saveSiteSettings(){
+ if(!owner())return notify('الإعدادات للمالك فقط',true);
+ const name=$('settings-name').value.trim(),description=$('settings-description').value.trim();
+ const logoUrl=$('settings-logo').value.trim(),defaultTheme=$('settings-default-theme').value;
+ if(!THEME_OPTIONS.includes(defaultTheme))return notify('اختر لونًا افتراضيًا صالحًا',true);
+ if(name.length<2||name.length>70||description.length>180||logoUrl.length>500||!validateLogoUrl(logoUrl))
+  return notify('تأكد من اسم الموقع (2 إلى 70 حرفًا) والوصف ورابط شعار HTTPS صحيح.',true);
+ const navOrder=[...settingsDraftOrder];
+ const hiddenSections=VISIBLE_SECTIONS.filter(id=>settingsDraftHidden.has(id));
+ const b=$('save-site-settings');b.disabled=true;
+ try{
+  await setDoc(doc(db,'platformSettings','siteAppearance'),{
+   siteName:name,siteDescription:description,logoUrl,defaultTheme,hiddenSections,navOrder,updatedBy:me.id,updatedAt:serverTimestamp()
+  });
+  settingsEditorDirty=false;
+  $('settings-save-status').textContent='تم حفظ الإعدادات لجميع الأعضاء.';
+  notify('تم تحديث إعدادات الموقع بنجاح');
+  await logAdmin('تعديل إعدادات الموقع','الهوية وترتيب الأقسام والأقسام المخفية');
+ }catch(e){$('settings-save-status').textContent=errorText(e);notify(errorText(e),true);}finally{b.disabled=false;}
+}
+// معلومات عامة فقط: تُقرأ أيضًا على صفحة تسجيل الدخول قبل تسجيل الدخول.
+onSnapshot(doc(db,'platformSettings','siteAppearance'),snap=>{
+ siteSettings=normalizeSiteSettings(snap.exists()?snap.data():DEFAULT_SITE_SETTINGS);
+ applySiteSettings();
+ if(owner()&&!settingsEditorDirty)resetSiteSettingsForm();
+},err=>{console.error('site settings',err);});
+
 const COLOR_KEY='culture_values_theme';
 function chooseTheme(choice){
- if(!['black','white','blue'].includes(choice))return;
+ if(!THEME_OPTIONS.includes(choice))return;
  document.documentElement.dataset.theme=choice;
  try{localStorage.setItem(COLOR_KEY,choice);}catch{}
  if($('quick-theme'))$('quick-theme').value=choice;
@@ -843,7 +1073,7 @@ function startSubscriptions(){if(subscriptionsReady)return;subscriptionsReady=tr
  }
  if(owner())subscribe('adminActivity',query(collection(db,'adminActivity'),orderBy('createdAt','desc'),limit(100)),v=>{adminActivity=v;rerender();});
 }
-function setUIRole(){if(!me)return;$('sidebar-name').textContent=me.fullname;$('top-name').textContent=me.fullname;$('sidebar-role').textContent=owner()?'المالك':editor()?'مشرف':'عضو';$('top-role').textContent=owner()?'المالك 👑':editor()?'مشرف':'عضو';const myGroup=memberGroupName(me.id);$('top-group').textContent=myGroup?'مجموعتي: '+myGroup:'';$('top-group').classList.toggle('hidden',!myGroup);document.querySelectorAll('.editor-nav').forEach(e=>e.classList.toggle('hidden',!editor()));document.querySelectorAll('.owner-nav').forEach(e=>e.classList.toggle('hidden',!owner()));document.querySelectorAll('.editor-only').forEach(e=>e.classList.toggle('hidden',!editor()));document.querySelectorAll('.owner-only').forEach(e=>e.classList.toggle('hidden',!owner()));document.querySelectorAll('.only-owner').forEach(e=>e.style.display=owner()?'table-cell':'none');}
+function setUIRole(){if(!me)return;$('sidebar-name').textContent=me.fullname;$('top-name').textContent=me.fullname;$('sidebar-role').textContent=owner()?'المالك':editor()?'مشرف':'عضو';$('top-role').textContent=owner()?'المالك 👑':editor()?'مشرف':'عضو';const myGroup=memberGroupName(me.id);$('top-group').textContent=myGroup?'مجموعتي: '+myGroup:'';$('top-group').classList.toggle('hidden',!myGroup);document.querySelectorAll('.editor-nav').forEach(e=>e.classList.toggle('hidden',!editor()));document.querySelectorAll('.owner-nav').forEach(e=>e.classList.toggle('hidden',!owner()));document.querySelectorAll('.editor-only').forEach(e=>e.classList.toggle('hidden',!editor()));document.querySelectorAll('.owner-only').forEach(e=>e.classList.toggle('hidden',!owner()));document.querySelectorAll('.only-owner').forEach(e=>e.style.display=owner()?'table-cell':'none');applySiteNavigation();}
 function setMobileMenu(open) {
   const drawer=$('site-sidebar'),scrim=$('mobile-nav-scrim'),trigger=$('mobile-menu-toggle');
   if (!drawer||!scrim||!trigger) return;
@@ -860,7 +1090,7 @@ $('mobile-menu-toggle').addEventListener('click',()=>setMobileMenu(!$('site-side
 $('mobile-nav-scrim').addEventListener('click',()=>setMobileMenu(false));
 window.addEventListener('keydown',e=>{if(e.key==='Escape')setMobileMenu(false);});
 window.addEventListener('resize',()=>{if(window.innerWidth>680)setMobileMenu(false);});
-function showPage(page){if(!me)return;const allowed=['dashboard','members','groups','attendance','speeches','daily-activities','contests','announcements','questions','notifications','statistics','appearance'];if(editor())allowed.push('points','history','attendance-report');if(owner())allowed.push('backups','activity');if(!allowed.includes(page))page='dashboard';currentPage=page;setMobileMenu(false);document.querySelectorAll('.page').forEach(p=>p.classList.toggle('hidden',p.id!=='page-'+page));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.page===page));if(page==='notifications')markRead();renderPage();window.scrollTo({top:0,behavior:'smooth'});}
+function showPage(page){if(!me)return;const allowed=['dashboard','members','groups','attendance','speeches','daily-activities','contests','announcements','questions','notifications','statistics','appearance'];if(editor())allowed.push('points','history','attendance-report');if(owner())allowed.push('backups','activity','site-settings');if(!allowed.includes(page)||(!editor()&&siteSettings.hiddenSections.includes(page)))page='dashboard';currentPage=page;setMobileMenu(false);document.querySelectorAll('.page').forEach(p=>p.classList.toggle('hidden',p.id!=='page-'+page));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.page===page));if(page==='notifications')markRead();renderPage();window.scrollTo({top:0,behavior:'smooth'});}
 // ربط عناصر القائمة الجانبية بالنقر، بما فيها النصوص والأيقونات
 $('nav-list').addEventListener('click',event=>{
  const button=event.target.closest('button.nav[data-page]');
@@ -869,7 +1099,7 @@ $('nav-list').addEventListener('click',event=>{
  showPage(button.dataset.page);
 });
 function rerender(){if(!me)return;renderDashboard();renderPage();renderNotifications(false);updateGroupChoiceUI();}
-function renderPage(){if(!me)return;const f={members:renderMembers,groups:renderGroups,points:fillCalcMembers,attendance:renderAttendance,speeches:renderSpeeches,'daily-activities':renderDailyActivities,appearance:renderAppearance,contests:renderContests,questions:renderQuestions,announcements:renderAnnouncements,notifications:()=>renderNotifications(true),'attendance-report':renderAttendanceReport,history:renderHistory,activity:renderAdminActivity,statistics:renderStats,backups:()=>{}};if(f[currentPage])f[currentPage]();}
+function renderPage(){if(!me)return;const f={members:renderMembers,groups:renderGroups,points:fillCalcMembers,attendance:renderAttendance,speeches:renderSpeeches,'daily-activities':renderDailyActivities,appearance:renderAppearance,contests:renderContests,questions:renderQuestions,announcements:renderAnnouncements,notifications:()=>renderNotifications(true),'attendance-report':renderAttendanceReport,history:renderHistory,activity:renderAdminActivity,statistics:renderStats,backups:()=>{},'site-settings':()=>{if(owner()&&!settingsEditorDirty)resetSiteSettingsForm();}};if(f[currentPage])f[currentPage]();}
 async function handleLogout(){setMobileMenu(false);await signOut(auth);}
 onAuthStateChanged(auth,async u=>{if(creating)return;if(!u){bootId++;clearSubscriptions();me=null;users=[];groups=[];questionFeedState='loading';groupChoiceDismissed=false;groupChoiceSaving=false;$('group-choice-overlay').classList.add('hidden');pointsHidden=false;pointLogs=[];dailyActivities=[];platformQuestions=[];myQuestionReceipts=[];allQuestionSubmissions=[];announcedIds.clear();announcementsInitialized=false;closeAnnouncementPopup();$('app-shell').classList.add('hidden');$('auth-wrap').classList.remove('hidden');if(new URLSearchParams(location.search).has('attendance'))$('login-attendance-hint').classList.remove('hidden');return;}await activate(u);});
 async function updatePresence(){if(!me)return;try{await updateDoc(doc(db,'users',me.id),{lastSeen:serverTimestamp()});}catch(e){console.warn('presence',e);}}
@@ -1714,7 +1944,7 @@ async function restoreGroupsFromBackup(event){
  }catch(e){notify(errorText(e),true);}
 }
 
-Object.assign(window,{handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
+Object.assign(window,{markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
 
 </script>
 </body></html>
