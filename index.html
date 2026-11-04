@@ -282,6 +282,16 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
 /* في المجموعات تظل أسماء الأعضاء ظاهرة دائمًا، وتُحجب درجة المجموعة فقط */
 .group-score b{overflow-wrap:anywhere}
 @media(max-width:680px){.group-score{max-width:100%;white-space:normal;text-align:center}.group-score b{font-size:14px}}
+
+/* استعادة كلمة المرور من شاشة تسجيل الدخول */
+.forgot-action{display:flex;justify-content:flex-start;margin:-1px 0 14px}
+.forgot-link{border:0;background:transparent;color:#c9a9ff;cursor:pointer;font:inherit;font-weight:700;font-size:13px;padding:6px 2px;text-decoration:underline;text-underline-offset:4px}
+.forgot-link:hover,.forgot-link:focus-visible{color:var(--gold)}
+.forgot-link:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+.reset-intro{line-height:1.9;font-size:13px;margin-top:0}
+.reset-intro i{color:var(--gold);margin-left:6px}
+.reset-back{margin-top:12px}
+#reset-feedback{line-height:1.9;font-size:13px;margin-bottom:0}
 </style>
 </head>
 <body>
@@ -289,7 +299,14 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
  <div class="card auth">
   <div class="auth-header"><i class="fa-solid fa-book-open-reader"></i><h1>الثقافة والقيم</h1><p class="muted">منصة الثقافة والارتقاء بالمستوى</p></div>
   <div class="auth-tabs"><button class="btn gold" id="login-tab" onclick="switchAuth('login')">تسجيل الدخول</button><button class="btn outline" id="register-tab" onclick="switchAuth('register')">إنشاء حساب</button></div>
-  <form id="login-form" onsubmit="handleLogin(event)"><div class="field"><label>البريد الإلكتروني</label><input class="input" type="email" id="login-email" required autocomplete="email"></div><div class="field"><label>كلمة المرور</label><input class="input" type="password" id="login-password" required autocomplete="current-password"></div><button class="btn gold full">دخول <i class="fa-solid fa-arrow-left"></i></button></form>
+  <form id="login-form" onsubmit="handleLogin(event)"><div class="field"><label>البريد الإلكتروني</label><input class="input" type="email" id="login-email" required autocomplete="email"></div><div class="field"><label>كلمة المرور</label><input class="input" type="password" id="login-password" required autocomplete="current-password"></div><div class="forgot-action"><button class="forgot-link" type="button" onclick="switchAuth('reset')"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button></div><button class="btn gold full">دخول <i class="fa-solid fa-arrow-left"></i></button></form>
+  <form id="reset-form" class="hidden" onsubmit="handlePasswordReset(event)">
+   <div class="notice reset-intro"><i class="fa-solid fa-envelope-open-text"></i> أدخل البريد الإلكتروني المسجل في حسابك، وسنطلب من Firebase إرسال رابط لتعيين كلمة مرور جديدة.</div>
+   <div class="field"><label for="reset-email">البريد الإلكتروني للحساب</label><input class="input" type="email" id="reset-email" autocomplete="email" inputmode="email" required placeholder="example@gmail.com"></div>
+   <button id="reset-submit" type="submit" class="btn gold full"><i class="fa-solid fa-paper-plane"></i> إرسال رابط استعادة كلمة المرور</button>
+   <div id="reset-feedback" class="notice hidden" role="status" aria-live="polite"></div>
+   <button type="button" class="btn outline full reset-back" onclick="switchAuth('login')"><i class="fa-solid fa-arrow-right"></i> العودة لتسجيل الدخول</button>
+  </form>
   <form id="register-form" class="hidden" onsubmit="handleRegister(event)"><div class="field"><label>الاسم الكامل</label><input class="input" id="reg-name" minlength="2" maxlength="80" required></div><div class="field"><label>اسم المستخدم</label><input class="input" id="reg-user" minlength="2" maxlength="30" required></div><div class="field"><label>البريد الإلكتروني</label><input class="input" type="email" id="reg-email" required></div><div class="field"><label>كلمة المرور (6 أحرف على الأقل)</label><input class="input" type="password" id="reg-password" minlength="6" required></div><button class="btn gold full">إنشاء حساب</button></form>
   <div id="login-attendance-hint" class="notice hidden">بعد تسجيل الدخول بتظهر لك صفحة التحضير لتضغط «حاضر».</div>
  </div>
@@ -451,7 +468,7 @@ html[data-theme="white"] .attendance-detail-row{background:#f6f7fb;color:#213052
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
-import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {getFirestore,collection,doc,getDoc,getDocs,setDoc,updateDoc,deleteDoc,onSnapshot,query,where,orderBy,limit,serverTimestamp,runTransaction,writeBatch,Timestamp,getDocsFromServer} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const config={apiKey:'AIzaSyAc9DLDQcH0vPnH3D2wAxgf5M0OLGIbQ5o',authDomain:'omran-b8b08.firebaseapp.com',projectId:'omran-b8b08',storageBucket:'omran-b8b08.firebasestorage.app',messagingSenderId:'268326579896',appId:'1:268326579896:web:bfa564b949d392ea05ce4d',measurementId:'G-VD2XR1VJ0N'};
 const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app);const $=id=>document.getElementById(id);
@@ -548,7 +565,48 @@ function renderDashboardAnnouncements(){
  $('dash-announcements').innerHTML=latest?`<div class="mini-row"><div><b>${safe(latest.title)}</b><small>${safe(latest.body).slice(0,100)}</small></div></div>`:'<div class="empty">لا يوجد إعلان حالي</div>';
 }
 function errorText(e){return ({'permission-denied':'لا توجد صلاحية. تأكد من نشر قواعد Firebase الجديدة.','auth/email-already-in-use':'هذا البريد مستخدم مسبقًا.','auth/invalid-credential':'خطأ في البريد أو كلمة المرور.','auth/weak-password':'كلمة المرور ضعيفة.','unavailable':'تعذر الاتصال، تأكد من الإنترنت.','storage/unauthorized':'رفع الملفات غير مفعل أو لا توجد صلاحية. تحقق من Storage Rules وخطة Firebase.','storage/unknown':'رفع الملفات يحتاج تفعيل Firebase Storage وقد يتطلب خطة Blaze.'})[e?.code]||e?.message||'حدث خطأ غير متوقع';}
-function switchAuth(section){$('login-form').classList.toggle('hidden',section!=='login');$('register-form').classList.toggle('hidden',section==='login');$('login-tab').classList.toggle('gold',section==='login');$('register-tab').classList.toggle('gold',section!=='login');$('login-tab').classList.toggle('outline',section!=='login');$('register-tab').classList.toggle('outline',section==='login');}
+function switchAuth(section){
+ const register=section==='register',reset=section==='reset';
+ $('login-form').classList.toggle('hidden',register||reset);
+ $('register-form').classList.toggle('hidden',!register);
+ $('reset-form').classList.toggle('hidden',!reset);
+ $('login-tab').classList.toggle('gold',!register);
+ $('register-tab').classList.toggle('gold',register);
+ $('login-tab').classList.toggle('outline',register);
+ $('register-tab').classList.toggle('outline',!register);
+ if(reset){
+  $('reset-email').value=$('login-email').value.trim()||$('reset-email').value;
+  $('reset-feedback').classList.add('hidden');
+ }
+}
+async function handlePasswordReset(event){
+ event.preventDefault();
+ const input=$('reset-email'),email=input.value.trim().toLowerCase(),button=$('reset-submit');
+ if(!email||!input.checkValidity())return notify('اكتب بريدًا إلكترونيًا صحيحًا لاستعادة كلمة المرور.',true);
+ button.disabled=true;
+ const feedback=$('reset-feedback');
+ feedback.classList.add('hidden');
+ try{
+  await sendPasswordResetEmail(auth,email);
+  feedback.textContent='إذا كان البريد مرتبطًا بحسابك، فراجع صندوق الوارد والبريد غير المرغوب فيه (Spam / Junk) بحثًا عن رسالة الاستعادة. قد يستغرق وصولها قليلًا.';
+  feedback.classList.remove('hidden');
+ }catch(error){
+  const messages={
+   'auth/invalid-email':'صيغة البريد غير صحيحة. راجع البريد الإلكتروني.',
+   'auth/network-request-failed':'تعذر الاتصال بـFirebase. تحقق من الإنترنت وحاول مرة أخرى.',
+   'auth/too-many-requests':'تم إرسال طلبات كثيرة. حاول لاحقًا.',
+   'auth/quota-exceeded':'تم بلوغ الحد اليومي لرسائل الاستعادة. حاول لاحقًا.',
+   'auth/operation-not-allowed':'استعادة كلمة المرور غير متاحة حاليًا. تواصل مع إدارة الموقع.'
+  };
+  if(error?.code==='auth/user-not-found'){
+   feedback.textContent='إذا كان البريد مرتبطًا بحسابك، فراجع صندوق الوارد والبريد غير المرغوب فيه (Spam / Junk).';
+   feedback.classList.remove('hidden');
+  }else{
+   notify(messages[error?.code]||'تعذر إرسال طلب الاستعادة. حاول مرة أخرى أو تواصل مع الإدارة.',true);
+  }
+ }finally{button.disabled=false;}
+}
+
 async function handleLogin(e){e.preventDefault();let b=e.target.querySelector('button');b.disabled=true;try{await signInWithEmailAndPassword(auth,$('login-email').value.trim().toLowerCase(),$('login-password').value);}catch(e){notify(errorText(e),true);}finally{b.disabled=false;}}
 async function handleRegister(e){e.preventDefault();if(creating)return;creating=true;let b=e.target.querySelector('button');b.disabled=true;let created=false;try{let fullname=$('reg-name').value.trim(),username=$('reg-user').value.trim();if(fullname.length<2||username.length<2)throw Error('اكتب اسمًا صحيحًا');let account=await createUserWithEmailAndPassword(auth,$('reg-email').value.trim().toLowerCase(),$('reg-password').value);created=true;await setDoc(doc(db,'users',account.user.uid),{fullname,username,points:0,role:'member',active:true,lastLogId:'',createdAt:serverTimestamp()});creating=false;await activate(account.user);notify('تم إنشاء حسابك بنجاح');}catch(e){notify(errorText(e),true);if(created)await signOut(auth).catch(()=>{});}finally{creating=false;b.disabled=false;}}
 function clearSubscriptions(){for(const fn of unsubscribe){try{fn();}catch{}}unsubscribe=[];subscriptionsReady=false;groupUsersLoaded=false;groupDocsLoaded=false;}
@@ -1464,7 +1522,7 @@ async function restoreGroupsFromBackup(event){
  }catch(e){notify(errorText(e),true);}
 }
 
-Object.assign(window,{archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
+Object.assign(window,{handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
 
 </script>
 </body></html>
