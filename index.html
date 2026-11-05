@@ -197,6 +197,13 @@ html[data-theme="white"] .activity-chip .activity-desc{color:#57647b}
 .question-review-actions .field{margin:0;flex:0 1 180px}
 .question-review-actions .btn{min-height:43px}
 @media(max-width:600px){.question-review-actions .field{flex:1 1 100%}.question-review-actions .btn{width:100%}}
+.question-reopen-overlay{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;padding:14px;background:#040615dc;backdrop-filter:blur(8px)}
+.question-reopen-modal{width:min(630px,100%);max-height:90vh;overflow:auto;background:linear-gradient(155deg,#171c36,#0d1328);border:1px solid #66539a;border-radius:18px;padding:22px;box-shadow:0 18px 65px #000a}
+.question-reopen-users{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:220px;overflow-y:auto;border:1px solid #34375c;border-radius:11px;padding:9px;margin:9px 0 17px}
+.question-reopen-users label{display:flex;align-items:center;gap:9px;background:#161a32;border:1px solid #343654;padding:10px;border-radius:9px;cursor:pointer;line-height:1.5}
+.question-reopen-users input{width:auto;flex:none;accent-color:#a485ef}
+.question-reopen-grant{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 0;padding:10px;background:#14172c;border-radius:9px}
+@media(max-width:620px){.question-reopen-modal{padding:15px}.question-reopen-users{grid-template-columns:1fr}}
 
 /* شريط إعلانات متحرك ويقف عند التركيز أو مرور المؤشر */
 .announcement-ticker{display:flex;align-items:center;gap:12px;background:linear-gradient(100deg,#25183b,#111c38 70%,#221838);border:1px solid #7d5ba8;border-radius:13px;padding:10px 12px;margin:0 0 16px;overflow:hidden;box-shadow:0 6px 25px #0003}
@@ -759,10 +766,21 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
    <h3><i class="fa-solid fa-pen-to-square"></i> نشر سؤال جديد</h3>
    <div class="field"><label for="question-title">عنوان السؤال</label><input class="input" id="question-title" maxlength="120" placeholder="مثال: ما أهمية الصدق؟"></div>
    <div class="field"><label for="question-description">توضيح إضافي (اختياري)</label><textarea id="question-description" maxlength="600" placeholder="التعليمات أو تفاصيل السؤال"></textarea></div>
-   <div class="field" style="max-width:220px"><label for="question-max">الحد الأعلى لنقاط الإجابة</label><input class="input" type="number" id="question-max" min="1" max="1000000" step="1" value="20"></div>
+   <div class="fields2"><div class="field"><label for="question-max">الحد الأعلى لنقاط الإجابة</label><input class="input" type="number" id="question-max" min="1" max="1000000" step="1" value="20"></div><div class="field"><label for="question-end-at">موعد انتهاء الإجابة (اختياري)</label><input class="input" type="datetime-local" id="question-end-at"><small class="muted">بدون موعد: يستمر السؤال حتى يغلقه المشرف يدويًا</small></div></div>
    <button class="btn" id="question-publish-button" onclick="publishQuestion()"><i class="fa-solid fa-paper-plane"></i> نشر السؤال</button>
   </div>
   <div class="grid" style="margin-top:16px" id="question-cards"><div class="empty">لا توجد أسئلة حاليًا</div></div>
+  <div id="question-reopen-overlay" class="question-reopen-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="question-reopen-title">
+   <div class="question-reopen-modal">
+    <div class="subhead" style="margin-bottom:14px"><h3 id="question-reopen-title" style="margin:0">إعادة فتح سؤال لطلاب محددين</h3><button type="button" class="btn sm outline" onclick="closeQuestionReopenManager()">إغلاق</button></div>
+    <p class="muted" id="question-reopen-description"></p>
+    <div class="field"><label for="question-reopen-search">ابحث باسم الطالب</label><input id="question-reopen-search" class="input" placeholder="ابحث في الأعضاء المتاحين" oninput="filterQuestionReopenUsers()"></div>
+    <div id="question-reopen-users" class="question-reopen-users"></div>
+    <div class="field"><label for="question-reopen-until">يسمح بالإجابة حتى (تاريخ ووقت)</label><input class="input" type="datetime-local" id="question-reopen-until"></div>
+    <button id="question-reopen-save" type="button" class="btn full" onclick="saveQuestionReopens()"><i class="fa-solid fa-lock-open"></i> فتح السؤال للطلاب المختارين</button>
+    <h3 style="margin:20px 0 10px">تصاريح الفتح السابقة لهذا السؤال</h3><div id="question-reopen-existing" class="muted">جار التحميل...</div>
+   </div>
+  </div>
   <div id="question-review-panel" class="card editor-only" style="margin-top:18px">
    <div class="subhead"><h3><i class="fa-solid fa-clipboard-check"></i>إجابات الطلاب للتقييم</h3><span class="pill gold" id="question-pending-count">0 بانتظار التقييم</span></div>
    <p class="muted">الإجابات هنا خاصة بالمالك والمشرفين فقط؛ لا يستطيع الأعضاء قراءة إجابات غيرهم.</p>
@@ -806,10 +824,17 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
-import {getAuth,GoogleAuthProvider,signInWithPopup,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,sendSignInLinkToEmail,isSignInWithEmailLink,signInWithEmailLink,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,sendSignInLinkToEmail,isSignInWithEmailLink,signInWithEmailLink,signOut,onAuthStateChanged,setPersistence,browserLocalPersistence,browserSessionPersistence} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {getFirestore,collection,doc,getDoc,getDocs,setDoc,updateDoc,deleteDoc,onSnapshot,query,where,orderBy,limit,serverTimestamp,runTransaction,writeBatch,Timestamp,getDocsFromServer} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const config={apiKey:'AIzaSyAc9DLDQcH0vPnH3D2wAxgf5M0OLGIbQ5o',authDomain:'omran-b8b08.firebaseapp.com',projectId:'omran-b8b08',storageBucket:'omran-b8b08.firebasestorage.app',messagingSenderId:'268326579896',appId:'1:268326579896:web:bfa564b949d392ea05ce4d',measurementId:'G-VD2XR1VJ0N'};
 const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app);const $=id=>document.getElementById(id);
+// الاحتفاظ بجلسة تسجيل الدخول حتى بعد إغلاق المتصفح وإعادة فتح الموقع من نفس الجهاز.
+let persistentLoginAvailable=true;
+const authPersistenceReady=setPersistence(auth,browserLocalPersistence).catch(async error=>{
+ console.warn('Persistent auth storage not available',error);
+ persistentLoginAvailable=false;
+ try{await setPersistence(auth,browserSessionPersistence);}catch(e){console.warn('Session storage also unavailable',e);}
+});
 const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=t=>t?.toDate?t.toDate().toLocaleString('ar-SA',{dateStyle:'short',timeStyle:'short'}):'—';
 const dateVal=t=>t?.toDate?t.toDate():null;
@@ -847,7 +872,8 @@ let me=null,users=[],groups=[],pointLogs=[],noticeLogs=[],sessions=[],speeches=[
 let unsubscribe=[],currentPage='dashboard',creating=false,bootId=0,toastTimer,scanned=null,activeQR='',subscriptionsReady=false,restoreBusy=false;
 let groupUsersLoaded=false,groupDocsLoaded=false,groupChoiceDismissed=false,groupChoiceSaving=false;
 let dailyActivities=[];
-let platformQuestions=[],myQuestionReceipts=[],allQuestionSubmissions=[];
+let platformQuestions=[],myQuestionReceipts=[],allQuestionSubmissions=[],myQuestionReopens=[];
+let selectedQuestionForReopen=null;
 let questionFeedState='loading'; // loading | ready | error
 let announcedIds=new Set(),announcementsInitialized=false,announcementPopupTimeout=null;
 let readLogIds=new Set();
@@ -1034,7 +1060,7 @@ function renderAnnouncementTicker(){
 }
 function onAnnouncementsChanged(items){renderAnnouncementTicker();}
 // مراقبة انتهاء الإعلان دون تغيير بياناته أو حاجة لإعادة نشر الموقع.
-setInterval(()=>{if(me){renderAnnouncementTicker();if(currentPage==='announcements')renderAnnouncements();renderDashboardAnnouncements();if(currentPage==='attendance-report')renderAttendanceReport();}},30000);
+setInterval(()=>{if(me){renderAnnouncementTicker();if(currentPage==='announcements')renderAnnouncements();renderDashboardAnnouncements();if(currentPage==='attendance-report')renderAttendanceReport();if(currentPage==='questions')renderQuestions();}},30000);
 function renderDashboardAnnouncements(){
  const latest=latestAnnouncementForBanner();
  $('dash-announcements').innerHTML=latest?`<div class="mini-row"><div><b>${safe(latest.title)}</b><small>${safe(latest.body).slice(0,100)}</small></div></div>`:'<div class="empty">لا يوجد إعلان حالي</div>';
@@ -1073,6 +1099,7 @@ async function handleQuickEmailLogin(event){
     // لا يكفي عنوان البريد وحده للدخول. تستخدم Google التحقق من مالك الحساب.
     const provider=new GoogleAuthProvider();
     provider.setCustomParameters({login_hint:email,prompt:'select_account'});
+    await authPersistenceReady;
     const result=await signInWithPopup(auth,provider);
     if((result.user.email||'').trim().toLowerCase()!==email){
       await signOut(auth);
@@ -1169,6 +1196,7 @@ async function completeEmailLink(event){
  if(!$('verify-email').checkValidity()||!typed)return notify('اكتب البريد الذي وصلته رسالة الدخول.',true);
  const button=$('verify-submit');button.disabled=true;creating=true;
  try{
+  await authPersistenceReady;
   const result=await signInWithEmailLink(auth,typed,emailLinkToComplete);
   localStorage.removeItem(EMAIL_FOR_LINK_KEY);
   // إزالة رمز التحقق من شريط العنوان بعد استخدامه بنجاح
@@ -1227,6 +1255,7 @@ async function handleLogin(e){
  const passwordMode=!$('login-password-section').classList.contains('hidden');
  const button=$('login-submit');button.disabled=true;
  try{
+  await authPersistenceReady;
   if(passwordMode){await signInWithEmailAndPassword(auth,email,$('login-password').value);}
   else{
    await sendSignInLinkToEmail(auth,email,{url:EMAIL_LINK_RETURN_URL,handleCodeInApp:true});
@@ -1240,6 +1269,7 @@ async function handleRegister(e){
  e.preventDefault();if(creating)return;
  const fullname=$('reg-name').value.trim(),username=$('reg-user').value.trim(),email=$('reg-email').value.trim().toLowerCase();
  if(fullname.length<2||fullname.length>80||username.length<2||username.length>30)return notify('اكتب اسمًا صحيحًا واسم مستخدم مناسبًا.',true);
+ await authPersistenceReady;
  const passwordMode=!$('register-password-section').classList.contains('hidden');
  const button=$('register-submit');button.disabled=true;
  if(!passwordMode){
@@ -1280,8 +1310,9 @@ function subscribe(name,q,callback){
 function startSubscriptions(){if(subscriptionsReady)return;subscriptionsReady=true;
  subscribe('platformQuestions',collection(db,'platformQuestions'),v=>{platformQuestions=v;questionFeedState='ready';rerender();});
  subscribe('myQuestionReceipts',query(collection(db,'questionReceipts'),where('uid','==',auth.currentUser.uid)),v=>{myQuestionReceipts=v;rerender();});
+ subscribe('myQuestionReopens',query(collection(db,'questionReopens'),where('uid','==',auth.currentUser.uid)),v=>{myQuestionReopens=v;rerender();});
  if(editor())subscribe('allQuestionSubmissions',collection(db,'questionSubmissions'),v=>{allQuestionSubmissions=v;rerender();});
- subscribe('users',collection(db,'users'),v=>{users=v;groupUsersLoaded=true;let own=users.find(u=>u.id===auth.currentUser?.uid);if(!own||own.active!==true){signOut(auth).catch(()=>{});return;}let previousRole=me?.role;me=own;setUIRole();if(previousRole!==me.role){clearSubscriptions();allQuestionSubmissions=[];startSubscriptions();}rerender();});
+ subscribe('users',collection(db,'users'),v=>{users=v;groupUsersLoaded=true;let own=users.find(u=>u.id===auth.currentUser?.uid);if(!own){console.warn('User list not ready; keeping auth session');return;}if(own.active!==true){signOut(auth).catch(()=>{});return;}let previousRole=me?.role;me=own;setUIRole();if(previousRole!==me.role){clearSubscriptions();allQuestionSubmissions=[];startSubscriptions();}rerender();});
  subscribe('groups',collection(db,'groups'),v=>{groups=v;groupDocsLoaded=true;setUIRole();rerender();});
  const unsubVisibility=onSnapshot(doc(db,'platformSettings','pointsVisibility'),snap=>{
    pointsHidden=snap.exists()&&snap.data().pointsHidden===true;
@@ -1318,7 +1349,7 @@ function setMobileMenu(open) {
 }
 $('mobile-menu-toggle').addEventListener('click',()=>setMobileMenu(!$('site-sidebar').classList.contains('mobile-open')));
 $('mobile-nav-scrim').addEventListener('click',()=>setMobileMenu(false));
-window.addEventListener('keydown',e=>{if(e.key==='Escape')setMobileMenu(false);});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){setMobileMenu(false);closeQuestionReopenManager();}});
 window.addEventListener('resize',()=>{if(window.innerWidth>680)setMobileMenu(false);});
 function showPage(page){if(!me)return;const allowed=['dashboard','members','groups','attendance','speeches','daily-activities','contests','announcements','questions','notifications','statistics','appearance'];if(editor())allowed.push('points','history','attendance-report');if(owner())allowed.push('backups','activity','site-settings');if(!allowed.includes(page)||(!editor()&&siteSettings.hiddenSections.includes(page)))page='dashboard';currentPage=page;setMobileMenu(false);document.querySelectorAll('.page').forEach(p=>p.classList.toggle('hidden',p.id!=='page-'+page));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.page===page));if(page==='notifications')markRead();renderPage();window.scrollTo({top:0,behavior:'smooth'});}
 // ربط عناصر القائمة الجانبية بالنقر، بما فيها النصوص والأيقونات
@@ -1331,7 +1362,7 @@ $('nav-list').addEventListener('click',event=>{
 function rerender(){if(!me)return;renderDashboard();renderPage();renderNotifications(false);updateGroupChoiceUI();}
 function renderPage(){if(!me)return;const f={members:renderMembers,groups:renderGroups,points:fillCalcMembers,attendance:renderAttendance,speeches:renderSpeeches,'daily-activities':renderDailyActivities,appearance:renderAppearance,contests:renderContests,questions:renderQuestions,announcements:renderAnnouncements,notifications:()=>renderNotifications(true),'attendance-report':renderAttendanceReport,history:renderHistory,activity:renderAdminActivity,statistics:renderStats,backups:()=>{},'site-settings':()=>{if(owner()&&!settingsEditorDirty)resetSiteSettingsForm();}};if(f[currentPage])f[currentPage]();}
 async function handleLogout(){setMobileMenu(false);await signOut(auth);}
-onAuthStateChanged(auth,async u=>{if(creating||emailLinkOnPage)return;if(!u){bootId++;clearSubscriptions();me=null;users=[];groups=[];questionFeedState='loading';groupChoiceDismissed=false;groupChoiceSaving=false;$('group-choice-overlay').classList.add('hidden');pointsHidden=false;pointLogs=[];dailyActivities=[];platformQuestions=[];myQuestionReceipts=[];allQuestionSubmissions=[];announcedIds.clear();announcementsInitialized=false;closeAnnouncementPopup();$('app-shell').classList.add('hidden');$('auth-wrap').classList.remove('hidden');switchAuth('login');if(new URLSearchParams(location.search).has('attendance'))$('login-attendance-hint').classList.remove('hidden');return;}await activate(u);});
+authPersistenceReady.then(()=>onAuthStateChanged(auth,async u=>{if(creating||emailLinkOnPage)return;if(!u){bootId++;clearSubscriptions();me=null;users=[];groups=[];questionFeedState='loading';groupChoiceDismissed=false;groupChoiceSaving=false;$('group-choice-overlay').classList.add('hidden');pointsHidden=false;pointLogs=[];dailyActivities=[];platformQuestions=[];myQuestionReceipts=[];myQuestionReopens=[];allQuestionSubmissions=[];closeQuestionReopenManager();announcedIds.clear();announcementsInitialized=false;closeAnnouncementPopup();$('app-shell').classList.add('hidden');$('auth-wrap').classList.remove('hidden');switchAuth('login');if(new URLSearchParams(location.search).has('attendance'))$('login-attendance-hint').classList.remove('hidden');return;}await activate(u);if(!persistentLoginAvailable&&me)notify('المتصفح لا يسمح بحفظ الدخول دائمًا؛ استخدم الوضع العادي وفعّل تخزين بيانات الموقع.',true);}));
 async function updatePresence(){if(!me)return;try{await updateDoc(doc(db,'users',me.id),{lastSeen:serverTimestamp()});}catch(e){console.warn('presence',e);}}
 setInterval(()=>{if(me&&document.visibilityState==='visible')updatePresence();},5*60*1000);
 const sortDate=(a,b)=>((b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
@@ -1348,7 +1379,7 @@ $('dash-questions').innerHTML=questionFeedState==='loading'
  ?'<div class="empty">جار تحميل الأسئلة...</div>'
  :questionFeedState==='error'
   ?'<div class="notice">تعذر تحميل الأسئلة من Firebase. تحقق من صلاحيات Firestore ثم حدّث الصفحة.</div>'
-  :preview(visibleQuestions.map(q=>`<div><b>${safe(q.title)}</b><small>${q.active?'متاح للإجابة':'مغلق للإجابة'}${publicPointsVisible()?' • حتى '+Number(q.maxPoints||0)+' نقطة':' • النقاط محجوبة'}</small></div>`),'لا توجد أسئلة منشورة بعد');
+  :preview(visibleQuestions.map(q=>`<div><b>${safe(q.title)}</b><small>${questionCanAnswer(q)?'متاح للإجابة':(questionGloballyOpen(q)?'متاح للإجابة':'مغلق للإجابة')}${publicPointsVisible()?' • حتى '+Number(q.maxPoints||0)+' نقطة':' • النقاط محجوبة'}</small></div>`),'لا توجد أسئلة منشورة بعد');
 $('dash-contests').innerHTML=preview(contests.filter(c=>!c.archived).slice().sort(sortDate).map(c=>`<div><b>${safe(c.title)}</b><small>${safe(c.description||'')} </small></div><span class="pill gold">${displayPoints(c.prize1||0)}${publicPointsVisible()?' نقطة':''}</span>`),'لا توجد مسابقات');
 renderDashboardAnnouncements();
 $('dash-activity').innerHTML=preview((editor()?pointLogs:pointLogs.filter(l=>l.targetId===me.id)).slice().sort(sortDate).map(l=>`<div><b>${concealMemberInfo()?'الإدارة':safe(l.actorName)} ${l.type==='add'?'أضاف':'خصم'} ${displayLogAmount(l.delta)}</b><small>${concealMemberInfo()?'عضو مخفي':safe(l.targetName)} • ${fmt(l.createdAt)}</small></div><b class="${l.type==='add'?'green-text':'red-text'}">${publicPointsVisible()?(l.type==='add'?'+':'-')+l.delta:'•••'}</b>`),'لا توجد عمليات');}
@@ -1991,6 +2022,19 @@ async function resetAllPoints(){
 
 // -------- الأسئلة: الإجابات الخاصة تقرأ من المشرفين فقط --------
 function questionReceipt(id){return myQuestionReceipts.find(r=>r.id===id+'_'+me?.id);}
+function questionGloballyOpen(q){return q?.active===true&&!q?.archived&&(!q.endAt||q.endAt.toMillis()>Date.now());}
+function questionGrant(qid){return myQuestionReopens.find(g=>g.id===qid+'_'+me?.id && g.uid===me?.id);}
+function questionCanAnswer(q){
+ if(!q||q.archived||!me)return false;
+ if(questionGloballyOpen(q))return true;
+ const grant=questionGrant(q.id);
+ return Boolean(grant&&grant.questionId===q.id&&grant.expiresAt?.toMillis?.()>Date.now());
+}
+function questionHasEnded(q){return !q?.archived&&!questionGloballyOpen(q);}
+function localDateTimeInputValue(time){
+ const d=new Date(time),pad=n=>String(n).padStart(2,'0');
+ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 function renderQuestions(){
  if(!me)return;
  const list=$('question-cards');
@@ -2002,16 +2046,16 @@ function renderQuestions(){
   list.innerHTML='<div class="card span12 notice">تعذر تحميل الأسئلة من Firebase. تحقق من صلاحيات القراءة المنشورة في Firestore.</div>';
  }else list.innerHTML=sorted.length?sorted.map(q=>{
   const receipt=questionReceipt(q.id);
-  const canRespond=q.active && !receipt;
-  const label=receipt?(receipt.status==='graded'?'تم التقييم':'تم إرسال الإجابة'):q.active?'متاح للإجابة':'مغلق';
+  const canRespond=questionCanAnswer(q) && !receipt;
+  const label=receipt?(receipt.status==='graded'?'تم التقييم':'تم إرسال الإجابة'):questionCanAnswer(q)?(questionGloballyOpen(q)?'متاح للإجابة':'مفتوح لك استثنائيًا'):'مغلق';
   return `<article class="card span6 question-card">
-   <div class="question-head"><span class="pill ${q.active?'green':'gold'}">${safe(label)}</span><span class="pill gold">${publicPointsVisible()?'حتى '+Number(q.maxPoints||0)+' نقطة':'النقاط محجوبة'}</span></div>
+   <div class="question-head"><span class="pill ${canRespond?'green':'gold'}">${safe(label)}</span><span class="pill gold">${publicPointsVisible()?'حتى '+Number(q.maxPoints||0)+' نقطة':'النقاط محجوبة'}</span></div>
    <h3 style="margin:0"><i class="fa-solid fa-circle-question"></i> ${safe(q.title)}</h3>
    ${q.description?`<p class="question-text muted">${safe(q.description)}</p>`:''}
-   <small class="muted">نُشر بواسطة ${safe(q.authorName||'مشرف')} • ${fmt(q.createdAt)}</small>
+   <small class="muted">نُشر بواسطة ${safe(q.authorName||'مشرف')} • ${fmt(q.createdAt)}${q.endAt?' • آخر موعد: '+fmt(q.endAt):''}${!questionGloballyOpen(q)&&questionCanAnswer(q)?' • سماح خاص حتى '+fmt(questionGrant(q.id)?.expiresAt):''}</small>
    ${receipt?`<div class="notice">${receipt.status==='graded'?`تم تقييم إجابتك${publicPointsVisible()?'، واستحققت <b>'+Number(receipt.points||0)+'</b> نقطة.':'. (الدرجة محجوبة حاليًا)'}`:'وصلت إجابتك، وهي بانتظار تقييم المشرف.'}</div>`:''}
    ${canRespond?`<div class="field"><label for="question-answer-${safe(q.id)}">اكتب إجابتك (لا يراها الطلاب)</label><textarea class="question-answer-box" id="question-answer-${safe(q.id)}" maxlength="3000" placeholder="اكتب إجابتك هنا..."></textarea></div><button class="btn" id="question-send-${safe(q.id)}" onclick="sendQuestionAnswer('${safe(q.id)}')"><i class="fa-solid fa-paper-plane"></i> إرسال الإجابة</button>`:''}
-   ${editor()&&q.active?`<button class="btn sm outline" onclick="closeQuestion('${safe(q.id)}')"><i class="fa-solid fa-lock"></i> إغلاق استقبال الإجابات</button>`:''}${editor()?`<button class="btn sm red" onclick="archiveQuestion('${safe(q.id)}')"><i class="fa-solid fa-trash"></i> حذف السؤال</button>`:''}
+   ${editor()&&questionGloballyOpen(q)?`<button class="btn sm outline" onclick="closeQuestion('${safe(q.id)}')"><i class="fa-solid fa-lock"></i> إغلاق استقبال الإجابات</button>`:''}${editor()&&questionHasEnded(q)?`<button class="btn sm outline" onclick="openQuestionReopenManager('${safe(q.id)}')"><i class="fa-solid fa-lock-open"></i> فتح لطلاب محددين</button>`:''}${editor()?`<button class="btn sm red" onclick="archiveQuestion('${safe(q.id)}')"><i class="fa-solid fa-trash"></i> حذف السؤال</button>`:''}
    </article>`;
  }).join(''):'<div class="card span12 empty">ما فيه أسئلة منشورة حتى الآن.</div>';
  const panel=$('question-review-panel');
@@ -2036,10 +2080,15 @@ async function publishQuestion(){
  const title=$('question-title').value.trim(),description=$('question-description').value.trim(),maxPoints=Number($('question-max').value);
  if(title.length<3||title.length>120||description.length>600||!Number.isSafeInteger(maxPoints)||maxPoints<1||maxPoints>1000000)
   return notify('اكتب سؤالًا صحيحًا وحدد الحد الأعلى للنقاط',true);
+ const endValue=$('question-end-at').value;
+ const endTime=endValue?new Date(endValue).getTime():null;
+ if(endValue&&(!Number.isFinite(endTime)||endTime<=Date.now()))return notify('موعد انتهاء السؤال لازم يكون في المستقبل',true);
  const button=$('question-publish-button');button.disabled=true;
  try{
-  await setDoc(doc(collection(db,'platformQuestions')),{title,description,maxPoints,active:true,createdBy:me.id,authorName:me.fullname,createdAt:serverTimestamp()});
-  $('question-title').value='';$('question-description').value='';
+  const data={title,description,maxPoints,active:true,createdBy:me.id,authorName:me.fullname,createdAt:serverTimestamp()};
+  if(endValue)data.endAt=Timestamp.fromDate(new Date(endTime));
+  await setDoc(doc(collection(db,'platformQuestions')),data);
+  $('question-title').value='';$('question-description').value='';$('question-end-at').value='';
   await logAdmin('نشر سؤال',title);
   notify('تم نشر السؤال لجميع الطلاب');
  }catch(e){notify(errorText(e),true);}finally{button.disabled=false;}
@@ -2056,11 +2105,85 @@ async function archiveQuestion(id){
  try{await updateDoc(doc(db,'platformQuestions',id),{active:false,archived:true});await logAdmin('إخفاء سؤال',q.title);notify('تم حذف السؤال من العرض دون حذف تقييمات الطلاب');}
  catch(e){notify(errorText(e),true);}
 }
+
+function closeQuestionReopenManager(){
+ selectedQuestionForReopen=null;
+ const modal=$('question-reopen-overlay');if(modal)modal.classList.add('hidden');
+}
+function filterQuestionReopenUsers(){
+ const search=($('question-reopen-search')?.value||'').trim().toLocaleLowerCase('ar');
+ document.querySelectorAll('#question-reopen-users label').forEach(label=>{
+  label.classList.toggle('hidden',!label.textContent.toLocaleLowerCase('ar').includes(search));
+ });
+}
+async function openQuestionReopenManager(questionId){
+ if(!editor())return notify('إعادة الفتح متاحة للمالك والمشرفين فقط',true);
+ const q=platformQuestions.find(x=>x.id===questionId);
+ if(!q||!questionHasEnded(q))return notify('يمكن منح الاستثناء فقط بعد انتهاء السؤال أو إغلاقه',true);
+ selectedQuestionForReopen=questionId;
+ $('question-reopen-overlay').classList.remove('hidden');
+ $('question-reopen-title').textContent='إعادة فتح: '+q.title;
+ $('question-reopen-description').textContent='اختر الطلاب الذين لم يرسلوا إجابة لهذا السؤال. لن يظهر زر الإجابة لبقية الطلاب.';
+ $('question-reopen-search').value='';
+ $('question-reopen-until').value=localDateTimeInputValue(Date.now()+24*60*60*1000);
+ const submitted=new Set(allQuestionSubmissions.filter(a=>a.questionId===questionId).map(a=>a.uid));
+ const students=users.filter(u=>u.active===true&&u.role==='member'&&!submitted.has(u.id)).sort((a,b)=>a.fullname.localeCompare(b.fullname,'ar'));
+ $('question-reopen-users').innerHTML=students.length?students.map(u=>`<label><input type="checkbox" value="${safe(u.id)}" class="question-reopen-student"><span>${safe(u.fullname)}</span></label>`).join(''):'<div class="muted">لا يوجد طلاب لم يجيبوا عن هذا السؤال.</div>';
+ await refreshQuestionReopens(questionId);
+}
+async function refreshQuestionReopens(questionId){
+ const container=$('question-reopen-existing');container.textContent='جار تحميل التصاريح...';
+ try{
+  const snap=await getDocs(query(collection(db,'questionReopens'),where('questionId','==',questionId)));
+  if(selectedQuestionForReopen!==questionId)return;
+  const grants=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>b.expiresAt.toMillis()-a.expiresAt.toMillis());
+  container.innerHTML=grants.length?grants.map(g=>{
+   const name=users.find(u=>u.id===g.uid)?.fullname||'طالب';
+   const live=g.expiresAt.toMillis()>Date.now();
+   return `<div class="question-reopen-grant"><span><b>${safe(name)}</b> <small class="muted">${live?'ساري حتى':'انتهى في'} ${fmt(g.expiresAt)}</small></span><button class="btn sm outline" onclick="revokeQuestionReopen('${safe(g.id)}')">إلغاء السماح</button></div>`;
+  }).join(''):'لا توجد تصاريح سابقة لهذا السؤال.';
+ }catch(e){container.textContent=errorText(e);}
+}
+async function saveQuestionReopens(){
+ if(!editor()||!selectedQuestionForReopen)return;
+ const q=platformQuestions.find(x=>x.id===selectedQuestionForReopen);
+ if(!q||!questionHasEnded(q))return notify('هذا السؤال غير منتهٍ حاليًا',true);
+ const ids=Array.from(document.querySelectorAll('#question-reopen-users input:checked')).map(x=>x.value);
+ if(!ids.length||ids.length>15)return notify('حدد من طالب واحد إلى 15 طالبًا في كل دفعة',true);
+ const until=new Date($('question-reopen-until').value).getTime();
+ if(!Number.isFinite(until)||until<=Date.now()+60000||until>Date.now()+30*86400000)return notify('حدد موعدًا بعد دقيقة على الأقل وخلال 30 يومًا',true);
+ const save=$('question-reopen-save');save.disabled=true;
+ let succeeded=0;
+ try{
+  // دفعات صغيرة حتى لا تتجاوز حدود فحص قواعد Firestore في الكتابة الجماعية.
+  for(let i=0;i<ids.length;i+=4){
+   const batch=writeBatch(db);
+   for(const uid of ids.slice(i,i+4))batch.set(doc(db,'questionReopens',selectedQuestionForReopen+'_'+uid),{
+    questionId:selectedQuestionForReopen,uid,expiresAt:Timestamp.fromDate(new Date(until)),grantedBy:me.id,updatedAt:serverTimestamp()
+   });
+   await batch.commit();succeeded+=ids.slice(i,i+4).length;
+  }
+  notify('تم فتح السؤال لـ'+succeeded+' طالب/طلاب فقط. بقية الطلاب لن يتمكنوا من الإجابة.');
+  await refreshQuestionReopens(selectedQuestionForReopen);
+  document.querySelectorAll('#question-reopen-users input:checked').forEach(x=>x.checked=false);
+  logAdmin('فتح سؤال استثنائي',q.title+' — '+succeeded+' طالب/طلاب').catch(console.warn);
+ }catch(e){notify('تم السماح لـ'+succeeded+' طلاب. '+errorText(e),true);}finally{save.disabled=false;}
+}
+async function revokeQuestionReopen(grantId){
+ if(!editor()||!selectedQuestionForReopen)return;
+ if(!grantId.startsWith(selectedQuestionForReopen+'_'))return;
+ if(!confirm('إلغاء سماح الطالب بالإجابة على هذا السؤال؟'))return;
+ try{
+  await deleteDoc(doc(db,'questionReopens',grantId));
+  notify('تم إلغاء السماح الخاص');
+  await refreshQuestionReopens(selectedQuestionForReopen);
+ }catch(e){notify(errorText(e),true);}
+}
 async function sendQuestionAnswer(questionId){
  if(!me)return;
  const q=platformQuestions.find(q=>q.id===questionId),input=$('question-answer-'+questionId),button=$('question-send-'+questionId);
  const answer=input?.value.trim()||'';
- if(!q?.active||q?.archived)return notify('السؤال مغلق حاليًا',true);
+ if(!questionCanAnswer(q))return notify('السؤال مغلق لحسابك حاليًا',true);
  if(answer.length<1||answer.length>3000)return notify('اكتب إجابة لا تتجاوز 3000 حرف',true);
  if(questionReceipt(questionId))return notify('لقد أرسلت إجابتك مسبقًا',true);
  button.disabled=true;
@@ -2069,7 +2192,13 @@ async function sendQuestionAnswer(questionId){
   await runTransaction(db,async tx=>{
    const questionSnap=await tx.get(doc(db,'platformQuestions',questionId));
    const receiptRef=doc(db,'questionReceipts',id),oldReceipt=await tx.get(receiptRef);
-   if(!questionSnap.exists()||!questionSnap.data().active)throw Error('تم إغلاق السؤال');
+   if(!questionSnap.exists()||questionSnap.data().archived===true)throw Error('السؤال غير متاح');
+   const latest={id:questionId,...questionSnap.data()};
+   if(!questionGloballyOpen(latest)){
+    const grantSnap=await tx.get(doc(db,'questionReopens',id));
+    const grant=grantSnap.data();
+    if(!grantSnap.exists()||grant.uid!==me.id||grant.questionId!==questionId||!grant.expiresAt||grant.expiresAt.toMillis()<=Date.now())throw Error('انتهت صلاحية الإجابة أو لم تحصل على إذن خاص');
+   }
    if(oldReceipt.exists())throw Error('لا يمكن إرسال أكثر من إجابة للسؤال الواحد');
    const base={questionId,uid:me.id,status:'pending',points:0,createdAt:serverTimestamp(),gradedBy:'',gradedAt:null,scoreLogId:''};
    tx.set(doc(db,'questionSubmissions',id),{...base,answer});
@@ -2116,7 +2245,7 @@ async function gradeQuestionAnswer(id){
 }
 
 // ---------------- نسخ البيانات ----------------
-async function downloadBackup(){if(!owner())return;const collections=['users','logs','groups','attendanceSessions','attendanceClaims','culturalRequests','speeches','contests','contestEntries','contestScores','platformQuestions','questionSubmissions','questionReceipts','dailyActivities','announcements','adminActivity','reversals'];$('backup-status').textContent='جار جمع البيانات من Firebase...';try{let all={format:'culture-values-backup-v2',projectId:config.projectId,created:new Date().toISOString(),collections:{}};for(const c of collections){let snapshot=await getDocsFromServer(collection(db,c));all.collections[c]=snapshot.docs.map(d=>({id:d.id,data:JSON.parse(JSON.stringify(d.data()))}));}let json=JSON.stringify(all,null,2),blob=new Blob([json],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`culture-values-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);$('backup-status').textContent='تم تحميل النسخة. احفظها بمكان آمن.';return true;}catch(e){notify(errorText(e),true);return false;}}
+async function downloadBackup(){if(!owner())return;const collections=['users','logs','groups','attendanceSessions','attendanceClaims','culturalRequests','speeches','contests','contestEntries','contestScores','platformQuestions','questionSubmissions','questionReceipts','questionReopens','dailyActivities','announcements','adminActivity','reversals'];$('backup-status').textContent='جار جمع البيانات من Firebase...';try{let all={format:'culture-values-backup-v2',projectId:config.projectId,created:new Date().toISOString(),collections:{}};for(const c of collections){let snapshot=await getDocsFromServer(collection(db,c));all.collections[c]=snapshot.docs.map(d=>({id:d.id,data:JSON.parse(JSON.stringify(d.data()))}));}let json=JSON.stringify(all,null,2),blob=new Blob([json],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`culture-values-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);$('backup-status').textContent='تم تحميل النسخة. احفظها بمكان آمن.';return true;}catch(e){notify(errorText(e),true);return false;}}
 function chooseRestore(){if(owner())$('backup-file').click();}
 async function restoreBackup(event){if(!owner()||restoreBusy)return;const file=event.target.files?.[0];event.target.value='';if(!file)return;if(file.size>15e6)return notify('الملف كبير جدًا',true);try{const content=JSON.parse(await file.text());if(content.format!=='culture-values-backup-v2'||content.projectId!==config.projectId||!Array.isArray(content.collections?.users))throw Error('ملف النسخة غير صالح أو من مشروع مختلف');const legacy=content.collections.users;const live=await getDocsFromServer(collection(db,'users'));let map=new Map(live.docs.map(d=>[d.id,d.data()]));let targets=legacy.filter(x=>map.has(x.id)&&(x.data.points!==map.get(x.id).points||x.data.fullname!==map.get(x.id).fullname));if(!targets.length){notify('لا توجد فروق لاستعادتها');return;}if(!confirm(`سيتم تعديل أسماء ونقاط ${targets.length} حسابًا. لا يمكن التراجع التلقائي. هل توافق؟`))return;if(prompt('اكتب كلمة استعادة للتأكيد')!=='استعادة')return;restoreBusy=true;let ok=0,fail=0;for(const u of targets){try{if(u.data.fullname!==map.get(u.id).fullname){const name=String(u.data.fullname||'');if(name.length>=2&&name.length<=80)await updateDoc(doc(db,'users',u.id),{fullname:name});}let current=map.get(u.id).points,want=u.data.points;if(Number.isSafeInteger(want)&&want>=0&&want<=1000000000&&want!==current){if(!map.get(u.id).active)throw Error('الحساب معطل');let delta=want-current;for(let left=Math.abs(delta);left>0;left-=Math.min(1000000,left))await awardPoints(u.id,delta>0,Math.min(1000000,left),'استعادة نسخة احتياطية');}ok++;}catch(e){fail++;console.error('restore',u.id,e);}}$('backup-status').textContent=`نتيجة الاستعادة: نجح ${ok}، تعذر ${fail}. لم تُستعد كلمات المرور أو الملفات.`;await logAdmin('استعادة نسخة احتياطية',`نجح ${ok}، تعذر ${fail}`);}catch(e){notify(errorText(e),true);}finally{restoreBusy=false;}}
 // رفع الدوال إلى النطاق العام لعمل أزرار HTML
@@ -2175,7 +2304,7 @@ async function restoreGroupsFromBackup(event){
 }
 
 startEmailLinkHandler();
-Object.assign(window,{setLoginChoice,handleQuickEmailLogin,completeEmailLink,handleProfileCompletion,togglePasswordMethod,markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
+Object.assign(window,{openQuestionReopenManager,closeQuestionReopenManager,filterQuestionReopenUsers,saveQuestionReopens,revokeQuestionReopen,setLoginChoice,handleQuickEmailLogin,completeEmailLink,handleProfileCompletion,togglePasswordMethod,markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
 
 </script>
 </body></html>
