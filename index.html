@@ -502,6 +502,14 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
 @media(max-width:440px){.theme-choices{grid-template-columns:repeat(2,minmax(0,1fr))}.theme-button{min-height:90px}}
 @media(max-width:680px){html[data-theme="purple"] .shell>.side,html[data-theme="green"] .shell>.side,html[data-theme="red"] .shell>.side,html[data-theme="pink"] .shell>.side,html[data-theme="gold"] .shell>.side,html[data-theme="cyan"] .shell>.side,html[data-theme="gray"] .shell>.side{background:var(--theme-side)}}
 
+
+/* نظام دخول البريد الإلكتروني الآمن */
+.auth-email-note{font-size:13px;line-height:1.9;color:var(--muted);background:rgba(100,73,180,.1);border-color:rgba(150,111,228,.35)}
+.auth-email-note i{color:var(--gold);margin-left:6px}
+.auth-alternative{text-align:center;margin-top:15px}
+.auth-alternative .forgot-link{font-size:13px;line-height:1.7;text-decoration:underline;color:#bea4ff}
+#login-feedback,#register-feedback,#verify-feedback{font-size:13px;line-height:1.9;overflow-wrap:anywhere}
+@media(prefers-reduced-motion:reduce){.login-ambient,.login-ambient *{animation:none!important}}
 </style>
 </head>
 <body>
@@ -547,7 +555,14 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
  <div class="card auth">
   <div class="auth-header"><i class="fa-solid fa-book-open-reader"></i><h1 id="site-auth-title">الثقافة والقيم</h1><p class="muted" id="site-auth-description">منصة الثقافة والارتقاء بالمستوى</p></div>
   <div class="auth-tabs"><button class="btn gold" id="login-tab" onclick="switchAuth('login')">تسجيل الدخول</button><button class="btn outline" id="register-tab" onclick="switchAuth('register')">إنشاء حساب</button></div>
-  <form id="login-form" onsubmit="handleLogin(event)"><div class="field"><label>البريد الإلكتروني</label><input class="input" type="email" id="login-email" required autocomplete="email"></div><div class="field"><label>كلمة المرور</label><input class="input" type="password" id="login-password" required autocomplete="current-password"></div><div class="forgot-action"><button class="forgot-link" type="button" onclick="switchAuth('reset')"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button></div><button class="btn gold full">دخول <i class="fa-solid fa-arrow-left"></i></button></form>
+  <form id="login-form" onsubmit="handleLogin(event)">
+   <div class="field"><label for="login-email">البريد الإلكتروني</label><input class="input" type="email" id="login-email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com"></div>
+   <div id="login-password-section" class="hidden"><div class="field"><label for="login-password">كلمة المرور</label><input class="input" type="password" id="login-password" autocomplete="current-password"></div><div class="forgot-action"><button class="forgot-link" type="button" onclick="switchAuth('reset')"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button></div></div>
+   <div class="notice auth-email-note"><i class="fa-solid fa-envelope-open-text"></i> سجل دخولك عبر رابط يُرسل إلى بريدك. افتح الرسالة واضغط الرابط لإثبات ملكية الحساب.</div>
+   <button id="login-submit" type="submit" class="btn gold full"><i class="fa-solid fa-paper-plane"></i> إرسال رابط الدخول</button>
+   <div id="login-feedback" class="notice hidden" role="status" aria-live="polite"></div>
+   <div class="auth-alternative"><button id="login-method-toggle" class="forgot-link" type="button" onclick="togglePasswordMethod('login')">هل تعذّر وصول الرابط؟ الدخول بكلمة المرور</button></div>
+  </form>
   <form id="reset-form" class="hidden" onsubmit="handlePasswordReset(event)">
    <div class="notice reset-intro"><i class="fa-solid fa-envelope-open-text"></i> أدخل البريد الإلكتروني المسجل في حسابك، وسنطلب من Firebase إرسال رابط لتعيين كلمة مرور جديدة.</div>
    <div class="field"><label for="reset-email">البريد الإلكتروني للحساب</label><input class="input" type="email" id="reset-email" autocomplete="email" inputmode="email" required placeholder="example@gmail.com"></div>
@@ -555,7 +570,27 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
    <div id="reset-feedback" class="notice hidden" role="status" aria-live="polite"></div>
    <button type="button" class="btn outline full reset-back" onclick="switchAuth('login')"><i class="fa-solid fa-arrow-right"></i> العودة لتسجيل الدخول</button>
   </form>
-  <form id="register-form" class="hidden" onsubmit="handleRegister(event)"><div class="field"><label>الاسم الكامل</label><input class="input" id="reg-name" minlength="2" maxlength="80" required></div><div class="field"><label>اسم المستخدم</label><input class="input" id="reg-user" minlength="2" maxlength="30" required></div><div class="field"><label>البريد الإلكتروني</label><input class="input" type="email" id="reg-email" required></div><div class="field"><label>كلمة المرور (6 أحرف على الأقل)</label><input class="input" type="password" id="reg-password" minlength="6" required></div><button class="btn gold full">إنشاء حساب</button></form>
+  <form id="register-form" class="hidden" onsubmit="handleRegister(event)">
+   <div class="field"><label for="reg-name">الاسم الكامل</label><input class="input" id="reg-name" minlength="2" maxlength="80" required></div>
+   <div class="field"><label for="reg-user">اسم المستخدم</label><input class="input" id="reg-user" minlength="2" maxlength="30" required></div>
+   <div class="field"><label for="reg-email">البريد الإلكتروني</label><input class="input" type="email" id="reg-email" required autocomplete="email" inputmode="email"></div>
+   <div id="register-password-section" class="hidden"><div class="field"><label for="reg-password">كلمة المرور (6 أحرف على الأقل)</label><input class="input" type="password" id="reg-password" minlength="6" autocomplete="new-password"></div></div>
+   <button id="register-submit" class="btn gold full" type="submit"><i class="fa-solid fa-envelope"></i> إرسال رابط إنشاء الحساب</button>
+   <div id="register-feedback" class="notice hidden" role="status" aria-live="polite"></div>
+   <div class="auth-alternative"><button id="register-method-toggle" class="forgot-link" type="button" onclick="togglePasswordMethod('register')">تعذّر وصول الرابط؟ إنشاء حساب بكلمة المرور</button></div>
+  </form>
+  <form id="email-verify-form" class="hidden" onsubmit="completeEmailLink(event)">
+   <div class="notice"><i class="fa-solid fa-shield-halved"></i> وصل رابط دخولك. للتأكد من أن الرابط يخص حسابك، اكتب البريد الإلكتروني الذي استلم عليه الرسالة.</div>
+   <div class="field"><label for="verify-email">تأكيد البريد الإلكتروني</label><input class="input" type="email" id="verify-email" autocomplete="email" inputmode="email" required></div>
+   <button id="verify-submit" type="submit" class="btn gold full">تأكيد البريد والدخول</button>
+   <div id="verify-feedback" class="notice hidden" role="status" aria-live="polite"></div>
+  </form>
+  <form id="complete-profile-form" class="hidden" onsubmit="handleProfileCompletion(event)">
+   <div class="notice"><i class="fa-solid fa-user-check"></i> تم تأكيد بريدك. أكمل بيانات حسابك مرة واحدة فقط؛ لن تحتاج إلى إنشاء حساب جديد إذا كان لديك حساب سابق.</div>
+   <div class="field"><label for="complete-name">الاسم الكامل</label><input class="input" id="complete-name" minlength="2" maxlength="80" required></div>
+   <div class="field"><label for="complete-user">اسم المستخدم</label><input class="input" id="complete-user" minlength="2" maxlength="30" required></div>
+   <button id="complete-submit" type="submit" class="btn gold full"><i class="fa-solid fa-check"></i> إكمال إنشاء الحساب</button>
+  </form>
   <div id="login-attendance-hint" class="notice hidden">بعد تسجيل الدخول بتظهر لك صفحة التحضير لتضغط «حاضر».</div>
  </div>
 </div>
@@ -754,7 +789,7 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
-import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,sendSignInLinkToEmail,isSignInWithEmailLink,signInWithEmailLink,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {getFirestore,collection,doc,getDoc,getDocs,setDoc,updateDoc,deleteDoc,onSnapshot,query,where,orderBy,limit,serverTimestamp,runTransaction,writeBatch,Timestamp,getDocsFromServer} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const config={apiKey:'AIzaSyAc9DLDQcH0vPnH3D2wAxgf5M0OLGIbQ5o',authDomain:'omran-b8b08.firebaseapp.com',projectId:'omran-b8b08',storageBucket:'omran-b8b08.firebasestorage.app',messagingSenderId:'268326579896',appId:'1:268326579896:web:bfa564b949d392ea05ce4d',measurementId:'G-VD2XR1VJ0N'};
 const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app);const $=id=>document.getElementById(id);
@@ -987,12 +1022,21 @@ function renderDashboardAnnouncements(){
  const latest=latestAnnouncementForBanner();
  $('dash-announcements').innerHTML=latest?`<div class="mini-row"><div><b>${safe(latest.title)}</b><small>${safe(latest.body).slice(0,100)}</small></div></div>`:'<div class="empty">لا يوجد إعلان حالي</div>';
 }
-function errorText(e){return ({'permission-denied':'لا توجد صلاحية. تأكد من نشر قواعد Firebase الجديدة.','auth/email-already-in-use':'هذا البريد مستخدم مسبقًا.','auth/invalid-credential':'خطأ في البريد أو كلمة المرور.','auth/weak-password':'كلمة المرور ضعيفة.','unavailable':'تعذر الاتصال، تأكد من الإنترنت.','storage/unauthorized':'رفع الملفات غير مفعل أو لا توجد صلاحية. تحقق من Storage Rules وخطة Firebase.','storage/unknown':'رفع الملفات يحتاج تفعيل Firebase Storage وقد يتطلب خطة Blaze.'})[e?.code]||e?.message||'حدث خطأ غير متوقع';}
+function errorText(e){return ({'permission-denied':'لا توجد صلاحية. تأكد من نشر قواعد Firebase الجديدة.','auth/email-already-in-use':'هذا البريد مستخدم مسبقًا.','auth/invalid-credential':'خطأ في البريد أو كلمة المرور.','auth/weak-password':'كلمة المرور ضعيفة.','auth/invalid-email':'البريد الإلكتروني غير صحيح.','auth/invalid-action-code':'رابط الدخول غير صحيح أو انتهت صلاحيته. اطلب رابطًا جديدًا.','auth/expired-action-code':'انتهت صلاحية رابط الدخول. اطلب رابطًا جديدًا.','auth/unauthorized-continue-uri':'أضف althaqafa-values.github.io إلى Authorized domains في Firebase.','auth/operation-not-allowed':'فعّل Email link (passwordless sign-in) في Firebase Authentication.','auth/too-many-requests':'تم تجاوز حد الطلبات. حاول لاحقًا أو استخدم كلمة المرور.','auth/quota-exceeded':'انتهى الحد اليومي لرسائل تسجيل الدخول. استخدم كلمة المرور أو حاول في يوم آخر.','unavailable':'تعذر الاتصال، تأكد من الإنترنت.','storage/unauthorized':'رفع الملفات غير مفعل أو لا توجد صلاحية. تحقق من Storage Rules وخطة Firebase.','storage/unknown':'رفع الملفات يحتاج تفعيل Firebase Storage وقد يتطلب خطة Blaze.'})[e?.code]||e?.message||'حدث خطأ غير متوقع';}
+const EMAIL_LINK_RETURN_URL='https://althaqafa-values.github.io/culture-values/';
+const EMAIL_FOR_LINK_KEY='culture_email_for_signin_v1';
+const REGISTER_PENDING_KEY='culture_register_for_email_v1';
+let emailLinkOnPage=isSignInWithEmailLink(auth,window.location.href);
+let emailLinkToComplete=emailLinkOnPage?window.location.href:null;
+function showAuthForm(id){
+ ['login-form','register-form','reset-form','email-verify-form','complete-profile-form'].forEach(x=>$(x).classList.toggle('hidden',x!==id));
+ $('auth-wrap').classList.remove('hidden');
+ $('app-shell').classList.add('hidden');
+ $('login-tab').parentElement.classList.toggle('hidden',id==='email-verify-form'||id==='complete-profile-form');
+}
 function switchAuth(section){
  const register=section==='register',reset=section==='reset';
- $('login-form').classList.toggle('hidden',register||reset);
- $('register-form').classList.toggle('hidden',!register);
- $('reset-form').classList.toggle('hidden',!reset);
+ showAuthForm(register?'register-form':reset?'reset-form':'login-form');
  $('login-tab').classList.toggle('gold',!register);
  $('register-tab').classList.toggle('gold',register);
  $('login-tab').classList.toggle('outline',register);
@@ -1001,6 +1045,91 @@ function switchAuth(section){
   $('reset-email').value=$('login-email').value.trim()||$('reset-email').value;
   $('reset-feedback').classList.add('hidden');
  }
+}
+function togglePasswordMethod(kind){
+ const section=$(kind==='login'?'login-password-section':'register-password-section');
+ const alternate=!section.classList.contains('hidden');
+ section.classList.toggle('hidden',alternate);
+ const pw=$(kind==='login'?'login-password':'reg-password');
+ pw.required=!alternate;
+ const submit=$(kind==='login'?'login-submit':'register-submit');
+ const toggle=$(kind==='login'?'login-method-toggle':'register-method-toggle');
+ const feedback=$(kind==='login'?'login-feedback':'register-feedback');
+ feedback.classList.add('hidden');
+ if(kind==='login'){
+  submit.innerHTML=alternate?'<i class="fa-solid fa-paper-plane"></i> إرسال رابط الدخول':'<i class="fa-solid fa-arrow-left"></i> الدخول بكلمة المرور';
+  toggle.textContent=alternate?'هل تعذّر وصول الرابط؟ الدخول بكلمة المرور':'العودة إلى الدخول بالبريد فقط';
+ }else{
+  submit.innerHTML=alternate?'<i class="fa-solid fa-envelope"></i> إرسال رابط إنشاء الحساب':'<i class="fa-solid fa-user-plus"></i> إنشاء حساب بكلمة المرور';
+  toggle.textContent=alternate?'تعذّر وصول الرابط؟ إنشاء حساب بكلمة المرور':'العودة إلى التسجيل بالبريد فقط';
+ }
+}
+function saveEmailForLink(email){
+ localStorage.setItem(EMAIL_FOR_LINK_KEY,email);
+}
+function showLinkFeedback(kind,notice){
+ const feedback=$(kind==='login'?'login-feedback':'register-feedback');
+ feedback.textContent=notice;
+ feedback.classList.remove('hidden');
+}
+function getPendingRegistration(email){
+ try{
+  const pending=JSON.parse(localStorage.getItem(REGISTER_PENDING_KEY)||'null');
+  if(pending?.email===email && Date.now()-pending.createdAt<86400000 && pending.createdAt<=Date.now())return pending;
+ }catch{}
+ return null;
+}
+function showProfileCompletion(){
+ showAuthForm('complete-profile-form');
+ const email=auth.currentUser?.email?.trim().toLowerCase();
+ const p=email?getPendingRegistration(email):null;
+ if(p){$('complete-name').value=p.fullname;$('complete-user').value=p.username;}
+}
+async function handleProfileCompletion(event){
+ event.preventDefault();
+ const user=auth.currentUser;if(!user||!user.emailVerified)return notify('يجب التحقق من بريدك أولًا.',true);
+ const fullname=$('complete-name').value.trim(),username=$('complete-user').value.trim();
+ if(fullname.length<2||fullname.length>80||username.length<2||username.length>30)return notify('أدخل اسمًا صحيحًا واسم مستخدم مناسبًا.',true);
+ const button=$('complete-submit');button.disabled=true;creating=true;
+ try{
+  const ref=doc(db,'users',user.uid),existing=await getDoc(ref);
+  if(!existing.exists())await setDoc(ref,{fullname,username,points:0,role:'member',active:true,lastLogId:'',createdAt:serverTimestamp()});
+  localStorage.removeItem(REGISTER_PENDING_KEY);
+  creating=false;
+  await activate(user);
+  notify('تم إنشاء حسابك وتأكيد البريد بنجاح.');
+ }catch(e){creating=false;notify(errorText(e),true);}finally{button.disabled=false;}
+}
+async function completeEmailLink(event){
+ event?.preventDefault();
+ if(!emailLinkToComplete||!isSignInWithEmailLink(auth,emailLinkToComplete))return notify('رابط الدخول غير صالح. اطلب رابطًا جديدًا.',true);
+ const typed=$('verify-email').value.trim().toLowerCase();
+ if(!$('verify-email').checkValidity()||!typed)return notify('اكتب البريد الذي وصلته رسالة الدخول.',true);
+ const button=$('verify-submit');button.disabled=true;creating=true;
+ try{
+  const result=await signInWithEmailLink(auth,typed,emailLinkToComplete);
+  localStorage.removeItem(EMAIL_FOR_LINK_KEY);
+  // إزالة رمز التحقق من شريط العنوان بعد استخدامه بنجاح
+  history.replaceState(null,'',EMAIL_LINK_RETURN_URL);
+  emailLinkOnPage=false;emailLinkToComplete=null;
+  const profileRef=doc(db,'users',result.user.uid);
+  const profileSnap=await getDoc(profileRef);
+  const pending=getPendingRegistration(typed);
+  if(!profileSnap.exists()&&pending){
+   await setDoc(profileRef,{fullname:pending.fullname,username:pending.username,points:0,role:'member',active:true,lastLogId:'',createdAt:serverTimestamp()});
+   localStorage.removeItem(REGISTER_PENDING_KEY);
+  }
+  creating=false;
+  if(!profileSnap.exists()&&!pending){showProfileCompletion();return;}
+  await activate(result.user);
+  notify('تم تأكيد بريدك وتسجيل الدخول بنجاح.');
+ }catch(e){creating=false;notify(errorText(e),true);}finally{button.disabled=false;}
+}
+function startEmailLinkHandler(){
+ if(!emailLinkOnPage)return;
+ showAuthForm('email-verify-form');
+ const cached=localStorage.getItem(EMAIL_FOR_LINK_KEY);
+ if(cached){$('verify-email').value=cached;completeEmailLink().catch(err=>notify(errorText(err),true));}
 }
 async function handlePasswordReset(event){
  event.preventDefault();
@@ -1030,10 +1159,48 @@ async function handlePasswordReset(event){
  }finally{button.disabled=false;}
 }
 
-async function handleLogin(e){e.preventDefault();let b=e.target.querySelector('button');b.disabled=true;try{await signInWithEmailAndPassword(auth,$('login-email').value.trim().toLowerCase(),$('login-password').value);}catch(e){notify(errorText(e),true);}finally{b.disabled=false;}}
-async function handleRegister(e){e.preventDefault();if(creating)return;creating=true;let b=e.target.querySelector('button');b.disabled=true;let created=false;try{let fullname=$('reg-name').value.trim(),username=$('reg-user').value.trim();if(fullname.length<2||username.length<2)throw Error('اكتب اسمًا صحيحًا');let account=await createUserWithEmailAndPassword(auth,$('reg-email').value.trim().toLowerCase(),$('reg-password').value);created=true;await setDoc(doc(db,'users',account.user.uid),{fullname,username,points:0,role:'member',active:true,lastLogId:'',createdAt:serverTimestamp()});creating=false;await activate(account.user);notify('تم إنشاء حسابك بنجاح');}catch(e){notify(errorText(e),true);if(created)await signOut(auth).catch(()=>{});}finally{creating=false;b.disabled=false;}}
+async function handleLogin(e){
+ e.preventDefault();
+ const email=$('login-email').value.trim().toLowerCase();
+ const passwordMode=!$('login-password-section').classList.contains('hidden');
+ const button=$('login-submit');button.disabled=true;
+ try{
+  if(passwordMode){await signInWithEmailAndPassword(auth,email,$('login-password').value);}
+  else{
+   await sendSignInLinkToEmail(auth,email,{url:EMAIL_LINK_RETURN_URL,handleCodeInApp:true});
+   saveEmailForLink(email);
+   showLinkFeedback('login','أرسلنا رابط الدخول إذا كان الإرسال متاحًا. افتح البريد الوارد أو Spam / Junk واضغط رابط الدخول. قد تتأخر الرسالة قليلًا.');
+   notify('تم طلب رابط الدخول. افتح بريدك الإلكتروني.');
+  }
+ }catch(e){notify(errorText(e),true);}finally{button.disabled=false;}
+}
+async function handleRegister(e){
+ e.preventDefault();if(creating)return;
+ const fullname=$('reg-name').value.trim(),username=$('reg-user').value.trim(),email=$('reg-email').value.trim().toLowerCase();
+ if(fullname.length<2||fullname.length>80||username.length<2||username.length>30)return notify('اكتب اسمًا صحيحًا واسم مستخدم مناسبًا.',true);
+ const passwordMode=!$('register-password-section').classList.contains('hidden');
+ const button=$('register-submit');button.disabled=true;
+ if(!passwordMode){
+  try{
+   await sendSignInLinkToEmail(auth,email,{url:EMAIL_LINK_RETURN_URL,handleCodeInApp:true});
+   localStorage.setItem(REGISTER_PENDING_KEY,JSON.stringify({email,fullname,username,createdAt:Date.now()}));
+   saveEmailForLink(email);
+   showLinkFeedback('register','أرسلنا رابط تأكيد البريد. افتح الرسالة واضغط الرابط، ثم نكمل إنشاء الحساب بنفس بريدك.');
+   notify('تم طلب رابط تأكيد البريد.');
+  }catch(err){notify(errorText(err),true);}finally{button.disabled=false;}
+  return;
+ }
+ creating=true;let created=false;
+ try{
+  const account=await createUserWithEmailAndPassword(auth,email,$('reg-password').value);
+  created=true;
+  await setDoc(doc(db,'users',account.user.uid),{fullname,username,points:0,role:'member',active:true,lastLogId:'',createdAt:serverTimestamp()});
+  creating=false;await activate(account.user);notify('تم إنشاء حسابك بنجاح');
+ }catch(err){notify(errorText(err),true);if(created)await signOut(auth).catch(()=>{});}
+ finally{creating=false;button.disabled=false;}
+}
 function clearSubscriptions(){for(const fn of unsubscribe){try{fn();}catch{}}unsubscribe=[];subscriptionsReady=false;groupUsersLoaded=false;groupDocsLoaded=false;}
-async function activate(user){const gen=++bootId;clearSubscriptions();groupChoiceDismissed=false;groupChoiceSaving=false;try{const snap=await getDoc(doc(db,'users',user.uid));if(gen!==bootId||auth.currentUser?.uid!==user.uid)return;if(!snap.exists()){notify('ملف حسابك غير مكتمل؛ راجع Firebase أو أنشئ حسابًا جديدًا.',true);await signOut(auth);return;}if(snap.data().active!==true){notify('حسابك معطل.',true);await signOut(auth);return;}me={id:snap.id,...snap.data()};$('auth-wrap').classList.add('hidden');$('app-shell').classList.remove('hidden');setUIRole();showPage('dashboard');announcedIds=new Set();announcementsInitialized=false;closeAnnouncementPopup();startSubscriptions();const queryParams=new URLSearchParams(location.search);if(queryParams.get('attendance')&&queryParams.get('key')){scanned={id:queryParams.get('attendance'),token:queryParams.get('key')};showPage('attendance');loadScannedAttendance();}updatePresence();}catch(e){notify(errorText(e),true);}}
+async function activate(user){const gen=++bootId;clearSubscriptions();groupChoiceDismissed=false;groupChoiceSaving=false;try{const snap=await getDoc(doc(db,'users',user.uid));if(gen!==bootId||auth.currentUser?.uid!==user.uid)return;if(!snap.exists()){if(user.emailVerified){showProfileCompletion();return;}notify('ملف حسابك غير مكتمل؛ راجع إدارة الموقع.',true);await signOut(auth);return;}if(snap.data().active!==true){notify('حسابك معطل.',true);await signOut(auth);return;}me={id:snap.id,...snap.data()};$('auth-wrap').classList.add('hidden');$('app-shell').classList.remove('hidden');setUIRole();showPage('dashboard');announcedIds=new Set();announcementsInitialized=false;closeAnnouncementPopup();startSubscriptions();const queryParams=new URLSearchParams(location.search);if(queryParams.get('attendance')&&queryParams.get('key')){scanned={id:queryParams.get('attendance'),token:queryParams.get('key')};showPage('attendance');loadScannedAttendance();}updatePresence();}catch(e){notify(errorText(e),true);}}
 function subscribe(name,q,callback){
  const stop=onSnapshot(q,s=>{
   if(name==='platformQuestions')questionFeedState='ready';
@@ -1102,7 +1269,7 @@ $('nav-list').addEventListener('click',event=>{
 function rerender(){if(!me)return;renderDashboard();renderPage();renderNotifications(false);updateGroupChoiceUI();}
 function renderPage(){if(!me)return;const f={members:renderMembers,groups:renderGroups,points:fillCalcMembers,attendance:renderAttendance,speeches:renderSpeeches,'daily-activities':renderDailyActivities,appearance:renderAppearance,contests:renderContests,questions:renderQuestions,announcements:renderAnnouncements,notifications:()=>renderNotifications(true),'attendance-report':renderAttendanceReport,history:renderHistory,activity:renderAdminActivity,statistics:renderStats,backups:()=>{},'site-settings':()=>{if(owner()&&!settingsEditorDirty)resetSiteSettingsForm();}};if(f[currentPage])f[currentPage]();}
 async function handleLogout(){setMobileMenu(false);await signOut(auth);}
-onAuthStateChanged(auth,async u=>{if(creating)return;if(!u){bootId++;clearSubscriptions();me=null;users=[];groups=[];questionFeedState='loading';groupChoiceDismissed=false;groupChoiceSaving=false;$('group-choice-overlay').classList.add('hidden');pointsHidden=false;pointLogs=[];dailyActivities=[];platformQuestions=[];myQuestionReceipts=[];allQuestionSubmissions=[];announcedIds.clear();announcementsInitialized=false;closeAnnouncementPopup();$('app-shell').classList.add('hidden');$('auth-wrap').classList.remove('hidden');if(new URLSearchParams(location.search).has('attendance'))$('login-attendance-hint').classList.remove('hidden');return;}await activate(u);});
+onAuthStateChanged(auth,async u=>{if(creating||emailLinkOnPage)return;if(!u){bootId++;clearSubscriptions();me=null;users=[];groups=[];questionFeedState='loading';groupChoiceDismissed=false;groupChoiceSaving=false;$('group-choice-overlay').classList.add('hidden');pointsHidden=false;pointLogs=[];dailyActivities=[];platformQuestions=[];myQuestionReceipts=[];allQuestionSubmissions=[];announcedIds.clear();announcementsInitialized=false;closeAnnouncementPopup();$('app-shell').classList.add('hidden');$('auth-wrap').classList.remove('hidden');switchAuth('login');if(new URLSearchParams(location.search).has('attendance'))$('login-attendance-hint').classList.remove('hidden');return;}await activate(u);});
 async function updatePresence(){if(!me)return;try{await updateDoc(doc(db,'users',me.id),{lastSeen:serverTimestamp()});}catch(e){console.warn('presence',e);}}
 setInterval(()=>{if(me&&document.visibilityState==='visible')updatePresence();},5*60*1000);
 const sortDate=(a,b)=>((b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
@@ -1945,7 +2112,8 @@ async function restoreGroupsFromBackup(event){
  }catch(e){notify(errorText(e),true);}
 }
 
-Object.assign(window,{markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
+startEmailLinkHandler();
+Object.assign(window,{completeEmailLink,handleProfileCompletion,togglePasswordMethod,markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
 
 </script>
 </body></html>
