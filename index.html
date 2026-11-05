@@ -503,6 +503,12 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
 @media(max-width:680px){html[data-theme="purple"] .shell>.side,html[data-theme="green"] .shell>.side,html[data-theme="red"] .shell>.side,html[data-theme="pink"] .shell>.side,html[data-theme="gold"] .shell>.side,html[data-theme="cyan"] .shell>.side,html[data-theme="gray"] .shell>.side{background:var(--theme-side)}}
 
 
+/* خيارات الدخول: الإبقاء على الخانات القديمة وإضافة دخول Google الآمن */
+.login-choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 17px}
+.login-choices .btn{font-size:12px;min-width:0;padding:10px 6px;line-height:1.6}
+#quick-email-form .auth-email-note{margin:10px 0 16px}
+#quick-email-form .btn.full{margin-top:8px}
+@media(max-width:420px){.login-choices .btn{font-size:11px;padding:10px 4px}}
 /* نظام دخول البريد الإلكتروني الآمن */
 .auth-email-note{font-size:13px;line-height:1.9;color:var(--muted);background:rgba(100,73,180,.1);border-color:rgba(150,111,228,.35)}
 .auth-email-note i{color:var(--gold);margin-left:6px}
@@ -555,13 +561,24 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
  <div class="card auth">
   <div class="auth-header"><i class="fa-solid fa-book-open-reader"></i><h1 id="site-auth-title">الثقافة والقيم</h1><p class="muted" id="site-auth-description">منصة الثقافة والارتقاء بالمستوى</p></div>
   <div class="auth-tabs"><button class="btn gold" id="login-tab" onclick="switchAuth('login')">تسجيل الدخول</button><button class="btn outline" id="register-tab" onclick="switchAuth('register')">إنشاء حساب</button></div>
-  <form id="login-form" onsubmit="handleLogin(event)">
+   <div id="login-choices" class="login-choices" role="group" aria-label="طريقة تسجيل الدخول">
+     <button id="password-login-choice" class="btn gold" type="button" onclick="setLoginChoice('password')"><i class="fa-solid fa-lock"></i> الدخول المعتاد</button>
+     <button id="google-login-choice" class="btn outline" type="button" onclick="setLoginChoice('google')"><i class="fa-regular fa-envelope"></i> تسجيل دخول بالإيميل</button>
+   </div>
+   <form id="quick-email-form" class="hidden" onsubmit="handleQuickEmailLogin(event)">
+     <div class="field"><label for="quick-email">البريد الإلكتروني</label><input class="input" type="email" id="quick-email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com"></div>
+     <div class="notice auth-email-note"><i class="fa-solid fa-shield-halved"></i> لحماية حسابات الطلاب، تتحقق Google من ملكية البريد بدل كلمة المرور أو رابط البريد. قد يطلب منك اختيار حساب Google.</div>
+     <button id="quick-email-submit" type="submit" class="btn gold full"><i class="fa-brands fa-google"></i> المتابعة باستخدام Google</button>
+     <div id="quick-email-feedback" class="notice hidden" role="status" aria-live="polite"></div>
+     <div class="auth-alternative"><button class="forgot-link" type="button" onclick="setLoginChoice('password')">العودة إلى الدخول بكلمة المرور</button></div>
+   </form>
+   <form id="login-form" onsubmit="handleLogin(event)">
    <div class="field"><label for="login-email">البريد الإلكتروني</label><input class="input" type="email" id="login-email" required autocomplete="email" inputmode="email" placeholder="example@gmail.com"></div>
-   <div id="login-password-section" class="hidden"><div class="field"><label for="login-password">كلمة المرور</label><input class="input" type="password" id="login-password" autocomplete="current-password"></div><div class="forgot-action"><button class="forgot-link" type="button" onclick="switchAuth('reset')"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button></div></div>
-   <div class="notice auth-email-note"><i class="fa-solid fa-envelope-open-text"></i> سجل دخولك عبر رابط يُرسل إلى بريدك. افتح الرسالة واضغط الرابط لإثبات ملكية الحساب.</div>
-   <button id="login-submit" type="submit" class="btn gold full"><i class="fa-solid fa-paper-plane"></i> إرسال رابط الدخول</button>
+   <div id="login-password-section"><div class="field"><label for="login-password">كلمة المرور</label><input class="input" type="password" id="login-password" autocomplete="current-password" required></div><div class="forgot-action"><button class="forgot-link" type="button" onclick="switchAuth('reset')"><i class="fa-solid fa-key"></i> نسيت كلمة المرور؟</button></div></div>
+   <div class="notice auth-email-note hidden" id="legacy-link-note"><i class="fa-solid fa-envelope-open-text"></i> يمكنك طلب رابط الدخول إلى بريدك إذا رغبت.</div>
+   <button id="login-submit" type="submit" class="btn gold full"><i class="fa-solid fa-arrow-left"></i> دخول</button>
    <div id="login-feedback" class="notice hidden" role="status" aria-live="polite"></div>
-   <div class="auth-alternative"><button id="login-method-toggle" class="forgot-link" type="button" onclick="togglePasswordMethod('login')">هل تعذّر وصول الرابط؟ الدخول بكلمة المرور</button></div>
+   <div class="auth-alternative"><button id="login-method-toggle" class="forgot-link hidden" type="button" onclick="togglePasswordMethod('login')">هل تعذّر وصول الرابط؟ الدخول بكلمة المرور</button></div>
   </form>
   <form id="reset-form" class="hidden" onsubmit="handlePasswordReset(event)">
    <div class="notice reset-intro"><i class="fa-solid fa-envelope-open-text"></i> أدخل البريد الإلكتروني المسجل في حسابك، وسنطلب من Firebase إرسال رابط لتعيين كلمة مرور جديدة.</div>
@@ -574,10 +591,10 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
    <div class="field"><label for="reg-name">الاسم الكامل</label><input class="input" id="reg-name" minlength="2" maxlength="80" required></div>
    <div class="field"><label for="reg-user">اسم المستخدم</label><input class="input" id="reg-user" minlength="2" maxlength="30" required></div>
    <div class="field"><label for="reg-email">البريد الإلكتروني</label><input class="input" type="email" id="reg-email" required autocomplete="email" inputmode="email"></div>
-   <div id="register-password-section" class="hidden"><div class="field"><label for="reg-password">كلمة المرور (6 أحرف على الأقل)</label><input class="input" type="password" id="reg-password" minlength="6" autocomplete="new-password"></div></div>
-   <button id="register-submit" class="btn gold full" type="submit"><i class="fa-solid fa-envelope"></i> إرسال رابط إنشاء الحساب</button>
+   <div id="register-password-section"><div class="field"><label for="reg-password">كلمة المرور (6 أحرف على الأقل)</label><input class="input" type="password" id="reg-password" minlength="6" autocomplete="new-password" required></div></div>
+   <button id="register-submit" class="btn gold full" type="submit"><i class="fa-solid fa-user-plus"></i> إنشاء حساب</button>
    <div id="register-feedback" class="notice hidden" role="status" aria-live="polite"></div>
-   <div class="auth-alternative"><button id="register-method-toggle" class="forgot-link" type="button" onclick="togglePasswordMethod('register')">تعذّر وصول الرابط؟ إنشاء حساب بكلمة المرور</button></div>
+   <div class="auth-alternative"><button id="register-method-toggle" class="forgot-link hidden" type="button" onclick="togglePasswordMethod('register')">تعذّر وصول الرابط؟ إنشاء حساب بكلمة المرور</button></div>
   </form>
   <form id="email-verify-form" class="hidden" onsubmit="completeEmailLink(event)">
    <div class="notice"><i class="fa-solid fa-shield-halved"></i> وصل رابط دخولك. للتأكد من أن الرابط يخص حسابك، اكتب البريد الإلكتروني الذي استلم عليه الرسالة.</div>
@@ -789,7 +806,7 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
-import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,sendSignInLinkToEmail,isSignInWithEmailLink,signInWithEmailLink,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import {getAuth,GoogleAuthProvider,signInWithPopup,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,sendSignInLinkToEmail,isSignInWithEmailLink,signInWithEmailLink,signOut,onAuthStateChanged} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {getFirestore,collection,doc,getDoc,getDocs,setDoc,updateDoc,deleteDoc,onSnapshot,query,where,orderBy,limit,serverTimestamp,runTransaction,writeBatch,Timestamp,getDocsFromServer} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const config={apiKey:'AIzaSyAc9DLDQcH0vPnH3D2wAxgf5M0OLGIbQ5o',authDomain:'omran-b8b08.firebaseapp.com',projectId:'omran-b8b08',storageBucket:'omran-b8b08.firebasestorage.app',messagingSenderId:'268326579896',appId:'1:268326579896:web:bfa564b949d392ea05ce4d',measurementId:'G-VD2XR1VJ0N'};
 const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app);const $=id=>document.getElementById(id);
@@ -1029,14 +1046,59 @@ const REGISTER_PENDING_KEY='culture_register_for_email_v1';
 let emailLinkOnPage=isSignInWithEmailLink(auth,window.location.href);
 let emailLinkToComplete=emailLinkOnPage?window.location.href:null;
 function showAuthForm(id){
- ['login-form','register-form','reset-form','email-verify-form','complete-profile-form'].forEach(x=>$(x).classList.toggle('hidden',x!==id));
+ ['login-form','quick-email-form','register-form','reset-form','email-verify-form','complete-profile-form'].forEach(x=>$(x).classList.toggle('hidden',x!==id));
+  $('login-choices').classList.toggle('hidden',id!=='login-form'&&id!=='quick-email-form');
  $('auth-wrap').classList.remove('hidden');
  $('app-shell').classList.add('hidden');
  $('login-tab').parentElement.classList.toggle('hidden',id==='email-verify-form'||id==='complete-profile-form');
 }
+function setLoginChoice(method){
+  const quick=method==='google';
+  showAuthForm(quick?'quick-email-form':'login-form');
+  $('password-login-choice').classList.toggle('gold',!quick);
+  $('password-login-choice').classList.toggle('outline',quick);
+  $('google-login-choice').classList.toggle('gold',quick);
+  $('google-login-choice').classList.toggle('outline',!quick);
+  if(quick&&!$('quick-email').value)$('quick-email').value=$('login-email').value.trim();
+  if(!quick&&!$('login-email').value)$('login-email').value=$('quick-email').value.trim();
+}
+async function handleQuickEmailLogin(event){
+  event.preventDefault();
+  const input=$('quick-email'),email=input.value.trim().toLowerCase();
+  if(!input.checkValidity())return notify('اكتب بريدًا إلكترونيًا صحيحًا.',true);
+  const button=$('quick-email-submit');button.disabled=true;
+  const feedback=$('quick-email-feedback');feedback.classList.add('hidden');
+  creating=true;
+  try{
+    // لا يكفي عنوان البريد وحده للدخول. تستخدم Google التحقق من مالك الحساب.
+    const provider=new GoogleAuthProvider();
+    provider.setCustomParameters({login_hint:email,prompt:'select_account'});
+    const result=await signInWithPopup(auth,provider);
+    if((result.user.email||'').trim().toLowerCase()!==email){
+      await signOut(auth);
+      throw new Error('اختر من Google الحساب المطابق للبريد الذي كتبته.');
+    }
+    const profileSnap=await getDoc(doc(db,'users',result.user.uid));
+    if(!profileSnap.exists()||profileSnap.data().active!==true){
+      await signOut(auth);
+      throw new Error('لم أجد حسابًا موجودًا وفعّالًا مرتبطًا بهذا الدخول. استخدم الدخول المعتاد حتى لا تضيع نقاط حسابك القديم.');
+    }
+    creating=false;
+    await activate(result.user);
+  }catch(error){
+    if(error?.code!=='auth/popup-closed-by-user'&&error?.code!=='auth/cancelled-popup-request'){
+      const message=error?.code==='auth/operation-not-allowed'?'فعّل Google في Firebase Authentication ← Sign-in method أولًا.':
+        error?.code==='auth/unauthorized-domain'?'أضف نطاق موقع GitHub Pages إلى Authorized domains في Firebase.':
+        error?.code==='auth/account-exists-with-different-credential'?'الحساب مسجل بطريقة دخول مختلفة. استخدم الدخول المعتاد أولًا، ثم اربط Google بالحساب نفسه.':
+        error?.code==='auth/popup-blocked'?'المتصفح منع نافذة Google. اسمح بالنوافذ المنبثقة لهذا الموقع.':
+        error?.message?.startsWith('اختر من Google')||error?.message?.startsWith('لم أجد حسابًا')?error.message:errorText(error);
+      feedback.textContent=message;feedback.classList.remove('hidden');notify(message,true);
+    }
+  }finally{creating=false;button.disabled=false;}
+}
 function switchAuth(section){
  const register=section==='register',reset=section==='reset';
- showAuthForm(register?'register-form':reset?'reset-form':'login-form');
+ if(register||reset)showAuthForm(register?'register-form':'reset-form');else setLoginChoice('password');
  $('login-tab').classList.toggle('gold',!register);
  $('register-tab').classList.toggle('gold',register);
  $('login-tab').classList.toggle('outline',register);
@@ -2113,7 +2175,7 @@ async function restoreGroupsFromBackup(event){
 }
 
 startEmailLinkHandler();
-Object.assign(window,{completeEmailLink,handleProfileCompletion,togglePasswordMethod,markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
+Object.assign(window,{setLoginChoice,handleQuickEmailLogin,completeEmailLink,handleProfileCompletion,togglePasswordMethod,markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
 
 </script>
 </body></html>
