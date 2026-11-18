@@ -2,6 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="./app-manifest.webmanifest">
+<meta name="theme-color" content="#19142f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="الثقافة والقيم">
+<link rel="apple-touch-icon" href="./app-icon-192.png">
 <title id="site-browser-title">الثقافة والقيم | منصة الأنشطة والنقاط</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -638,6 +643,16 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
   .cvw-skip{left:1%;top:1%}
 }
 
+
+/* إشعارات الجهاز: إعدادات خاصة بصاحب الحساب، ولا تُظهر بيانات غيره */
+.push-settings{display:grid;gap:13px;margin-bottom:16px}
+.push-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px}
+.push-options label{display:flex;align-items:center;gap:9px;padding:11px;background:rgba(139,92,246,.075);border:1px solid var(--stroke);border-radius:10px;cursor:pointer}
+.push-options input{width:18px;height:18px;accent-color:var(--purple)}
+.push-status{padding:11px 13px;border:1px solid var(--stroke);border-radius:9px;color:var(--muted);line-height:1.7}
+.push-status.ok{color:var(--green);border-color:var(--green)}
+.push-inline-list .listitem{margin-bottom:7px}
+@media(max-width:550px){.push-options{grid-template-columns:1fr}.push-settings .actions .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -964,7 +979,28 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
   </div>
  </section>
  <section id="page-announcements" class="page hidden"><h2 class="page-head"><i class="fa-solid fa-bullhorn"></i>لوحة الإعلانات</h2><div class="card editor-only"><h3>نشر إعلان جديد</h3><div class="field"><label>عنوان الإعلان</label><input class="input" id="announce-title" maxlength="120"></div><div class="field"><label>التفاصيل</label><textarea id="announce-body" maxlength="2000"></textarea></div><div class="field"><label>تاريخ ووقت انتهاء الإعلان</label><input id="announce-expires" type="datetime-local" class="input" required><small class="muted">سيختفي الإعلان تلقائيًا من شريط الإعلانات وقائمة الطلاب بعد انتهاء الوقت. الإعلانات القديمة بلا تاريخ انتهاء ستظل معروضة حتى تُحذف.</small></div><button class="btn" onclick="postAnnouncement()">نشر الإعلان</button></div><div id="announcements-list" style="margin-top:14px"></div></section>
- <section id="page-notifications" class="page hidden"><h2 class="page-head"><i class="fa-solid fa-bell"></i>إشعاراتي</h2><div class="card"><p class="muted">تظهر هنا إضافات وخصومات النقاط الخاصة بحسابك مباشرة، مع السبب والوقت.</p><div id="notification-list"></div></div></section>
+ <section id="page-notifications" class="page hidden">
+<h2 class="page-head"><i class="fa-solid fa-bell"></i>إشعاراتي</h2>
+<div class="card push-settings">
+ <h3><i class="fa-solid fa-mobile-screen-button"></i> إشعارات الجوال والكمبيوتر خارج الموقع</h3>
+ <p class="hint">تصلك إضافة نقاطك، والأسئلة والإعلانات والأنشطة المناسبة لحسابك بعد موافقتك على الإشعارات. لا تظهر بيانات الطلاب الآخرين.</p>
+ <div class="push-options">
+  <label><input type="checkbox" id="push-pref-points" checked onchange="savePushPreferences()"> نقاطي وتقييماتي</label>
+  <label><input type="checkbox" id="push-pref-announcements" checked onchange="savePushPreferences()"> الإعلانات</label>
+  <label><input type="checkbox" id="push-pref-questions" checked onchange="savePushPreferences()"> الأسئلة</label>
+  <label><input type="checkbox" id="push-pref-activities" checked onchange="savePushPreferences()"> الأنشطة</label>
+  <label><input type="checkbox" id="push-pref-contests" checked onchange="savePushPreferences()"> المسابقات</label>
+ </div>
+ <div class="actions">
+  <button type="button" id="push-enable" class="btn green" onclick="enableDeviceNotifications()"><i class="fa-solid fa-bell"></i>تفعيل إشعارات هذا الجهاز</button>
+  <button type="button" id="push-disable" class="btn outline" onclick="disableDeviceNotifications()"><i class="fa-solid fa-bell-slash"></i>إيقافها على هذا الجهاز</button>
+ </div>
+ <div class="push-status" id="push-status" role="status">لم يتم فحص حالة إشعارات هذا الجهاز بعد.</div>
+ <p class="hint">على الآيفون: افتح الموقع من Safari وأضفه إلى الشاشة الرئيسية، ثم افتحه من الأيقونة واضغط «تفعيل». لا تصل إشعارات فورية والجهاز مطفأ بالكامل.</p>
+</div>
+<div class="card"><h3>تنبيهات وصلت أثناء فتح الموقع</h3><div class="push-inline-list" id="push-in-app-list"></div></div>
+<div class="card" style="margin-top:14px"><h3>سجل إشعارات نقاطي</h3><div id="notification-list"></div></div>
+</section>
  <section id="page-attendance-report" class="page hidden">
   <h2 class="page-head"><i class="fa-solid fa-clipboard-user"></i>سجل الحضور والغياب الشهري</h2>
   <div class="card">
@@ -1001,6 +1037,7 @@ html[data-theme="white"] .settings-toggle,html[data-theme="white"] .settings-ord
 <script type="module">
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth,GoogleAuthProvider,signInWithPopup,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,sendSignInLinkToEmail,isSignInWithEmailLink,signInWithEmailLink,signOut,onAuthStateChanged,setPersistence,browserLocalPersistence,browserSessionPersistence} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import {getMessaging,getToken,deleteToken,onMessage,isSupported} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-messaging.js';
 import {getFirestore,collection,doc,getDoc,getDocs,setDoc,updateDoc,deleteDoc,onSnapshot,query,where,orderBy,limit,serverTimestamp,runTransaction,writeBatch,Timestamp,getDocsFromServer} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const config={apiKey:'AIzaSyAc9DLDQcH0vPnH3D2wAxgf5M0OLGIbQ5o',authDomain:'omran-b8b08.firebaseapp.com',projectId:'omran-b8b08',storageBucket:'omran-b8b08.firebasestorage.app',messagingSenderId:'268326579896',appId:'1:268326579896:web:bfa564b949d392ea05ce4d',measurementId:'G-VD2XR1VJ0N'};
 const app=initializeApp(config),auth=getAuth(app),db=getFirestore(app);const $=id=>document.getElementById(id);
@@ -1504,7 +1541,7 @@ $('cvw-overlay').addEventListener('click',event=>{if(event.target===event.curren
 window.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('cvw-overlay').classList.contains('hidden'))closeWelcomeScreen();});
 
 function clearSubscriptions(){for(const fn of unsubscribe){try{fn();}catch{}}unsubscribe=[];subscriptionsReady=false;groupUsersLoaded=false;groupDocsLoaded=false;}
-async function activate(user){const gen=++bootId;clearSubscriptions();groupChoiceDismissed=false;groupChoiceSaving=false;try{const snap=await getDoc(doc(db,'users',user.uid));if(gen!==bootId||auth.currentUser?.uid!==user.uid)return;if(!snap.exists()){if(user.emailVerified){showProfileCompletion();return;}notify('ملف حسابك غير مكتمل؛ راجع إدارة الموقع.',true);await signOut(auth);return;}if(snap.data().active!==true){notify('حسابك معطل.',true);await signOut(auth);return;}me={id:snap.id,...snap.data()};$('auth-wrap').classList.add('hidden');$('app-shell').classList.remove('hidden');setUIRole();showPage('dashboard');showWelcomeScreen();announcedIds=new Set();announcementsInitialized=false;closeAnnouncementPopup();startSubscriptions();const queryParams=new URLSearchParams(location.search);if(queryParams.get('attendance')&&queryParams.get('key')){scanned={id:queryParams.get('attendance'),token:queryParams.get('key')};showPage('attendance');loadScannedAttendance();}updatePresence();}catch(e){notify(errorText(e),true);}}
+async function activate(user){const gen=++bootId;clearSubscriptions();groupChoiceDismissed=false;groupChoiceSaving=false;try{const snap=await getDoc(doc(db,'users',user.uid));if(gen!==bootId||auth.currentUser?.uid!==user.uid)return;if(!snap.exists()){if(user.emailVerified){showProfileCompletion();return;}notify('ملف حسابك غير مكتمل؛ راجع إدارة الموقع.',true);await signOut(auth);return;}if(snap.data().active!==true){notify('حسابك معطل.',true);await signOut(auth);return;}me={id:snap.id,...snap.data()};$('auth-wrap').classList.add('hidden');$('app-shell').classList.remove('hidden');setUIRole();showPage('dashboard');loadPushPreferences();const openedPage=new URLSearchParams(location.search).get('open');if(['notifications','questions','announcements','daily-activities','contests'].includes(openedPage))showPage(openedPage);showWelcomeScreen();refreshDevicePushToken();announcedIds=new Set();announcementsInitialized=false;closeAnnouncementPopup();startSubscriptions();const queryParams=new URLSearchParams(location.search);if(queryParams.get('attendance')&&queryParams.get('key')){scanned={id:queryParams.get('attendance'),token:queryParams.get('key')};showPage('attendance');loadScannedAttendance();}updatePresence();}catch(e){notify(errorText(e),true);}}
 function subscribe(name,q,callback){
  const stop=onSnapshot(q,s=>{
   if(name==='platformQuestions')questionFeedState='ready';
@@ -1572,8 +1609,8 @@ $('nav-list').addEventListener('click',event=>{
  showPage(button.dataset.page);
 });
 function rerender(){if(!me)return;renderDashboard();renderPage();renderNotifications(false);updateGroupChoiceUI();}
-function renderPage(){if(!me)return;const f={members:renderMembers,groups:renderGroups,points:fillCalcMembers,attendance:renderAttendance,speeches:renderSpeeches,'daily-activities':renderDailyActivities,appearance:renderAppearance,contests:renderContests,questions:renderQuestions,announcements:renderAnnouncements,notifications:()=>renderNotifications(true),'attendance-report':renderAttendanceReport,history:renderHistory,activity:renderAdminActivity,statistics:renderStats,backups:()=>{},'site-settings':()=>{if(owner()&&!settingsEditorDirty)resetSiteSettingsForm();}};if(f[currentPage])f[currentPage]();}
-async function handleLogout(){setMobileMenu(false);closeWelcomeScreen();await signOut(auth);}
+function renderPage(){if(!me)return;const f={members:renderMembers,groups:renderGroups,points:fillCalcMembers,attendance:renderAttendance,speeches:renderSpeeches,'daily-activities':renderDailyActivities,appearance:renderAppearance,contests:renderContests,questions:renderQuestions,announcements:renderAnnouncements,notifications:()=>{loadPushPreferences();renderNotifications(true);},'attendance-report':renderAttendanceReport,history:renderHistory,activity:renderAdminActivity,statistics:renderStats,backups:()=>{},'site-settings':()=>{if(owner()&&!settingsEditorDirty)resetSiteSettingsForm();}};if(f[currentPage])f[currentPage]();}
+async function handleLogout(){setMobileMenu(false);closeWelcomeScreen();if(me&&getPushTokenInfo())await disableDeviceNotifications();await signOut(auth);}
 authPersistenceReady.then(()=>onAuthStateChanged(auth,async u=>{if(creating||emailLinkOnPage)return;if(!u){closeWelcomeScreen();cvwShownThisPage=false;bootId++;clearSubscriptions();me=null;users=[];groups=[];questionFeedState='loading';groupChoiceDismissed=false;groupChoiceSaving=false;$('group-choice-overlay').classList.add('hidden');pointsHidden=false;pointLogs=[];dailyActivities=[];platformQuestions=[];myQuestionReceipts=[];myQuestionReopens=[];allQuestionSubmissions=[];closeQuestionReopenManager();announcedIds.clear();announcementsInitialized=false;closeAnnouncementPopup();$('app-shell').classList.add('hidden');$('auth-wrap').classList.remove('hidden');switchAuth('login');if(new URLSearchParams(location.search).has('attendance'))$('login-attendance-hint').classList.remove('hidden');return;}await activate(u);if(!persistentLoginAvailable&&me)notify('المتصفح لا يسمح بحفظ الدخول دائمًا؛ استخدم الوضع العادي وفعّل تخزين بيانات الموقع.',true);}));
 async function updatePresence(){if(!me)return;try{await updateDoc(doc(db,'users',me.id),{lastSeen:serverTimestamp()});}catch(e){console.warn('presence',e);}}
 setInterval(()=>{if(me&&document.visibilityState==='visible')updatePresence();},5*60*1000);
@@ -1977,6 +2014,75 @@ function renderAttendanceReport(){
 function renderAdminActivity(){if(!owner())return;$('admin-activity-list').innerHTML=adminActivity.length?adminActivity.map(a=>`<div class="listitem"><b>${safe(a.actorName)} — ${safe(a.action)}</b><p>${safe(a.detail)} • ${fmt(a.createdAt)}</p></div>`).join(''):'<div class="empty">لا توجد نشاطات مسجلة</div>';}
 function renderStats(){const online=users.filter(u=>u.active&&dateVal(u.lastSeen)&&Date.now()-dateVal(u.lastSeen).getTime()<15*60000).length;let cards=[['الأعضاء',users.filter(x=>x.active).length],['النشطون الآن (تقديريًا)',online],['المسابقات',contests.filter(c=>!c.archived).length],['الأسئلة المنشورة',platformQuestions.filter(q=>q.active&&!q.archived).length],['الإعلانات',announcements.length],['جلسات التحضير',sessions.length],['عمليات السجل المحملة',pointLogs.length]];$('full-stats').innerHTML=cards.map(([a,n])=>`<div class="stat"><div><small>${a}</small><strong>${n}</strong></div></div>`).join('');$('stats-board').innerHTML=topListHTML(15);}
 function searchMemberFromTop(){showPage('members');$('member-search').value=$('global-search').value;renderMembers();}
+
+// ====================== Push / FCM ======================
+// ضع المفتاح العام Public VAPID Key هنا بعد توليده من Firebase > Cloud Messaging.
+// لا تضف VAPID PRIVATE KEY أو مفاتيح Service Account داخل GitHub.
+const PUSH_PUBLIC_VAPID_KEY='PASTE_YOUR_PUBLIC_VAPID_KEY_HERE';
+const PUSH_TYPES=['points','announcements','questions','activities','contests'];
+const pushDefaults=()=>Object.fromEntries(PUSH_TYPES.map(k=>[k,true]));
+let pushMessagingPromise=isSupported().then(supported=>supported?getMessaging(app):null).catch(()=>null);
+const pushLocalKey=uid=>'cv_push_registration_'+uid;
+const pushPrefsKey=uid=>'cv_push_preferences_'+uid;
+const pushRecentKey=uid=>'cv_push_recent_'+uid;
+function getPushPrefs(){if(!me)return pushDefaults();try{return {...pushDefaults(),...JSON.parse(localStorage.getItem(pushPrefsKey(me.id))||'{}')};}catch{return pushDefaults();}}
+function getPushTokenInfo(){if(!me)return null;try{return JSON.parse(localStorage.getItem(pushLocalKey(me.id))||'null');}catch{return null;}}
+function pushPrefsFromInputs(){return Object.fromEntries(PUSH_TYPES.map(type=>[type,!!$('push-pref-'+type)?.checked]));}
+function loadPushPreferences(){const prefs=getPushPrefs();PUSH_TYPES.forEach(type=>{const input=$('push-pref-'+type);if(input)input.checked=prefs[type]!==false;});updatePushStatus();renderRecentPushes();}
+function updatePushStatus(text){const status=$('push-status');if(!status)return;const hasToken=!!getPushTokenInfo();status.classList.toggle('ok',hasToken);if(text){status.textContent=text;return;}if(!('Notification' in window)||!('serviceWorker' in navigator)){status.textContent='هذا المتصفح لا يدعم إشعارات الويب المطلوبة.';return;}if(Notification.permission==='denied'){status.textContent='تم منع الإشعارات من إعدادات المتصفح؛ اسمح بها من إعدادات الموقع.';return;}status.textContent=hasToken?'إشعارات هذا الجهاز مفعلة لحسابك.':'الإشعارات غير مفعّلة على هذا الجهاز.';}
+async function pushDocId(token){const data=new TextEncoder().encode(token);const digest=await crypto.subtle.digest('SHA-256',data);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
+async function registerPushToken(token){
+ if(!me||auth.currentUser?.uid!==me.id)return;
+ const uid=me.id,id=await pushDocId(token);
+ const older=getPushTokenInfo();
+ // تجنب إبقاء رمز قديم لنفس الجهاز عند تغييره.
+ if(older?.docId && older.docId!==id){try{await deleteDoc(doc(db,'users',uid,'pushTokens',older.docId));}catch(e){console.warn('remove old push token',e);}}
+ await setDoc(doc(db,'users',uid,'pushTokens',id),{
+   uid,token,enabled:true,preferences:getPushPrefs(),updatedAt:serverTimestamp()
+ });
+ localStorage.setItem(pushLocalKey(uid),JSON.stringify({docId:id,token}));
+ updatePushStatus();
+}
+async function refreshDevicePushToken(){
+ if(!me||!getPushTokenInfo()||PUSH_PUBLIC_VAPID_KEY.startsWith('PASTE_')||!('Notification' in window)||Notification.permission!=='granted')return;
+ try{
+  const messaging=await pushMessagingPromise;if(!messaging)return;
+  const worker=await navigator.serviceWorker.register(new URL('./firebase-messaging-sw.js',location.href));
+  const token=await getToken(messaging,{vapidKey:PUSH_PUBLIC_VAPID_KEY,serviceWorkerRegistration:worker});
+  if(token)await registerPushToken(token);
+ }catch(e){console.warn('push refresh',e);updatePushStatus('تعذر تجديد الإشعارات: '+e.message);}
+}
+async function enableDeviceNotifications(){
+ if(!me)return notify('سجّل الدخول أولًا',true);
+ if(PUSH_PUBLIC_VAPID_KEY.startsWith('PASTE_'))return updatePushStatus('يجب أن يضيف المالك المفتاح العام VAPID إلى كود GitHub أولًا.');
+ if(!window.isSecureContext||!('Notification' in window)||!('serviceWorker' in navigator))return updatePushStatus('إشعارات الجهاز غير مدعومة في هذا المتصفح أو الاتصال غير آمن.');
+ if(/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.navigator.standalone&&!window.matchMedia('(display-mode: standalone)').matches)return updatePushStatus('على الآيفون أضف الموقع إلى الشاشة الرئيسية وافتحه من أيقونته ثم فعّل الإشعارات.');
+ const button=$('push-enable');button.disabled=true;
+ try{
+  // طلب الإذن فور الضغط على الزر، وليس أثناء فتح الصفحة تلقائيًا.
+  const permission=await Notification.requestPermission();
+  if(permission!=='granted')return updatePushStatus('لم يتم السماح بالإشعارات. يمكنك تغيير الإذن من إعدادات المتصفح.');
+  const messaging=await pushMessagingPromise;if(!messaging)throw Error('خدمة FCM غير متاحة في هذا المتصفح.');
+  const worker=await navigator.serviceWorker.register(new URL('./firebase-messaging-sw.js',location.href));
+  const token=await getToken(messaging,{vapidKey:PUSH_PUBLIC_VAPID_KEY,serviceWorkerRegistration:worker});
+  if(!token)throw Error('لم يُنشأ رمز الإشعارات. تحقق من إعدادات Cloud Messaging.');
+  await registerPushToken(token);
+  updatePushStatus('تم تفعيل إشعارات هذا الجهاز لهذا الحساب.');
+  notify('تم تفعيل إشعارات الجهاز');
+ }catch(e){console.error('push enable',e);updatePushStatus('تعذر التفعيل: '+(e.message||e));notify('تعذر تفعيل الإشعارات',true);}finally{button.disabled=false;}
+}
+async function savePushPreferences(){if(!me)return;const prefs=pushPrefsFromInputs();localStorage.setItem(pushPrefsKey(me.id),JSON.stringify(prefs));const info=getPushTokenInfo();if(info){try{await updateDoc(doc(db,'users',me.id,'pushTokens',info.docId),{preferences:prefs,updatedAt:serverTimestamp()});updatePushStatus('تم حفظ تفضيلات إشعارات هذا الجهاز.');}catch(e){updatePushStatus('فشل مزامنة التفضيلات: '+(e.message||e));}}}
+async function disableDeviceNotifications(){if(!me)return;const info=getPushTokenInfo();const button=$('push-disable');button.disabled=true;try{
+  if(info?.docId)await deleteDoc(doc(db,'users',me.id,'pushTokens',info.docId));
+  const messaging=await pushMessagingPromise;if(messaging)await deleteToken(messaging).catch(()=>{});
+  localStorage.removeItem(pushLocalKey(me.id));updatePushStatus('تم إيقاف إشعارات هذا الجهاز.');notify('تم إيقاف الإشعارات');
+ }catch(e){updatePushStatus('تعذر الإيقاف: '+(e.message||e));notify('تعذر إيقاف الإشعارات',true);}finally{button.disabled=false;}}
+function getRecentPushes(){if(!me)return [];try{return JSON.parse(localStorage.getItem(pushRecentKey(me.id))||'[]');}catch{return [];}}
+function renderRecentPushes(){const el=$('push-in-app-list');if(!el||!me)return;const rows=getRecentPushes().slice(0,15);el.innerHTML=rows.length?rows.map(p=>`<div class="listitem"><b>${safe(p.title)}</b><p>${safe(p.body)}</p><small class="muted">${safe(new Date(p.at).toLocaleString('ar-SA'))}</small></div>`).join(''):'<p class="muted">لا توجد تنبيهات حديثة داخل هذا المتصفح.</p>';}
+function addRecentPush(payload){if(!me)return;const d=payload.data||{};const title=String(d.title||'الثقافة والقيم').slice(0,100),body=String(d.body||'لديك تحديث جديد في المنصة').slice(0,180);let rows=getRecentPushes();rows.unshift({id:d.eventId||String(Date.now()),title,body,at:Date.now()});localStorage.setItem(pushRecentKey(me.id),JSON.stringify(rows.slice(0,30)));renderRecentPushes();notify(title+': '+body);}
+pushMessagingPromise.then(messaging=>{if(messaging)onMessage(messaging,payload=>addRecentPush(payload));});
+// =========================================================
+
 function renderNotifications(mark=false){if(!me)return;const root=$('notification-list');let received=pointLogs.filter(l=>l.targetId===me.id).sort(sortDate);root.innerHTML=received.length?received.map(l=>`<div class="listitem"><div class="subhead"><b class="${l.type==='add'?'green-text':'red-text'}">${l.type==='add'?'إضافة':'خصم'} ${displayLogAmount(l.delta)}</b><small class="muted">${fmt(l.createdAt)}</small></div><p>${safe(l.reason||'بدون سبب مضاف')} — بواسطة ${concealMemberInfo()?'الإدارة':safe(l.actorName)}</p></div>`).join(''):'<div class="empty">ما عندك إشعارات نقاط بعد</div>';const unread=received.filter(l=>!readLogIds.has(l.id)).length;$('unread-num').textContent=unread?`(${unread})`:'';$('nav-dot').textContent=unread;$('nav-dot').classList.toggle('hidden',!unread);if(mark)markRead();}
 function markRead(){pointLogs.filter(l=>l.targetId===me?.id).forEach(l=>readLogIds.add(l.id));try{localStorage.setItem('culture_read_ids',JSON.stringify([...readLogIds].slice(-500)));}catch{}$('nav-dot').classList.add('hidden');$('unread-num').textContent='';}
 // ---------------- الحضور بالباركود ----------------
@@ -2516,7 +2622,7 @@ async function restoreGroupsFromBackup(event){
 }
 
 startEmailLinkHandler();
-Object.assign(window,{openQuestionReopenManager,closeQuestionReopenManager,filterQuestionReopenUsers,saveQuestionReopens,revokeQuestionReopen,setLoginChoice,handleQuickEmailLogin,completeEmailLink,handleProfileCompletion,togglePasswordMethod,markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
+Object.assign(window,{enableDeviceNotifications,disableDeviceNotifications,savePushPreferences,openQuestionReopenManager,closeQuestionReopenManager,filterQuestionReopenUsers,saveQuestionReopens,revokeQuestionReopen,setLoginChoice,handleQuickEmailLogin,completeEmailLink,handleProfileCompletion,togglePasswordMethod,markSiteSettingsDirty,resetSiteSettingsForm,saveSiteSettings,moveSiteSection,handlePasswordReset,archiveContest,archiveQuestion,showAttendanceDetails,renderAttendanceReport,publishQuestion,closeQuestion,sendQuestionAnswer,gradeQuestionAnswer,chooseTheme,closeAnnouncementPopup,saveDailyActivity,deleteDailyActivity,editDailyActivity,clearDailyActivityEditor,openGroupChoice,postponeGroupChoice,joinMyGroup,changeGroupPoints,togglePointsVisibility,showManualAttendance,submitManualAttendance,switchAuth,handleLogin,handleRegister,handleLogout,showPage,searchMemberFromTop,renderMembers,renderGroups,assignGroup,renameGroup,chooseGroupRestore,restoreGroupsFromBackup,fillCalcMembers,setCalc,changePoints,toggleModerator,editMemberName,disableMember,renderHistory,undoLog,createAttendance,showSessionQR,showAttendees,closeSession,confirmAttendance,addSpeech,removeSpeech,createContest,joinContest,scoreContest,prizeContest,postAnnouncement,removeAnnouncement,renderNotifications,downloadBackup,chooseRestore,restoreBackup,resetAllPoints});
 
 </script>
 </body></html>
