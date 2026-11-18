@@ -2018,7 +2018,8 @@ function searchMemberFromTop(){showPage('members');$('member-search').value=$('g
 // ====================== Push / FCM ======================
 // ضع المفتاح العام Public VAPID Key هنا بعد توليده من Firebase > Cloud Messaging.
 // لا تضف VAPID PRIVATE KEY أو مفاتيح Service Account داخل GitHub.
-const PUSH_PUBLIC_VAPID_KEY='PASTE_YOUR_PUBLIC_VAPID_KEY_HERE';
+const PUSH_PUBLIC_VAPID_KEY=BFfdkPBC2xSrW2QxQfuJtkJXDlr7PdU9vwdyU_7Et7Hk0EvtCKv16INcxbwCdv91K60_Kz3rzyfuZuI58mfQmUs
+  
 const PUSH_TYPES=['points','announcements','questions','activities','contests'];
 const pushDefaults=()=>Object.fromEntries(PUSH_TYPES.map(k=>[k,true]));
 let pushMessagingPromise=isSupported().then(supported=>supported?getMessaging(app):null).catch(()=>null);
